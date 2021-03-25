@@ -1,15 +1,4 @@
 __pycache__/
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Environments
 .env
-.venv
-env/
-venv/
+venv
+.vscode
