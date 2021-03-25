@@ -1,4 +1,4 @@
-# Character Chat
+# Character Chatter
 
 Web app for playing out discussions between characters of a tabletop or virtual role playing game. Game masters (GM) can set up chats and invite players to have discussions in-character.
 
