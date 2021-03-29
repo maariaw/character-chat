@@ -2,34 +2,57 @@
 <p>Action not successful: {{ error }}</p>
 {% endif %}
 {% if session.username %}
-<p>Logged in as {{ session.username }}</p>
+<p>Logged in as {{ session.username }} by role {{ session.role }}</p>
+{% if (session.role == 2) %}
+<p>This is a GM account</p>
+{% else %}
+<p>This is a player account</p>
+{% endif %}
 <a href="/logout">Log out</a>
 {% else %}
 <form action="/login" method="POST">
     <h3>Login</h3>
     <p>
-        Username:
-        <br>
-        <input type="text" name="username">
+        <label>
+            Username:
+            <br>
+            <input type="text" name="username">
+        </label>
     </p>
     <p>
-        Password:
-        <br>
-        <input type="password" name="password">
+        <label>
+            Password:
+            <br>
+            <input type="password" name="password">
+        </label>
     </p>
     <input type="submit" value="Log in">
 </form>
 <form action="/register" method="POST">
     <h3>Register</h3>
     <p>
-        Username (max 20 characters):
-        <br>
-        <input type="text" name="username">
+        <label>
+            Player account
+            <input type="radio" name="account" value="1" checked>
+        </label>
+        <label>
+            GM account
+            <input type="radio" name="account" value="2">
+        </label>
     </p>
     <p>
-        Password (8-32 characters):
-        <br>
-        <input type="password" name="password">
+        <label>
+            Username (max 20 characters):
+            <br>
+            <input type="text" name="username">
+        </label>
+    </p>
+    <p>
+        <label>
+            Password (8-32 characters):
+            <br>
+            <input type="password" name="password">
+        </label>
     </p>
     <input type="submit" value="Register">
 </form>
