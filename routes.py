@@ -47,4 +47,5 @@ def register():
     db.session.execute(sql, {"username":username, "password":hash_value, "account":account_type})
     db.session.commit()
     session["username"] = username
+    session["role"] = account_type
     return redirect("/")
