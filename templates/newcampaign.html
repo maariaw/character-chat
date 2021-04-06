@@ -1,0 +1,25 @@
+{% if error %}
+<p>Action not successful: {{ error }}</p>
+{% endif %}
+{% if (session.role == 1) %}
+<p>Campaigns can only be created on GM accounts</p>
+{% else %}
+<form action="/createcampaign" method="POST">
+    <h3>Start a new campaign</h3>
+    <p>
+        <label>
+            Title (max 100 characters):
+            <br>
+            <input type="text" name="title">
+        </label>
+    </p>
+    <p>
+        <label>
+            Password (8-32 characters):
+            <br>
+            <input type="password" name="password">
+        </label>
+    </p>
+    <input type="submit" value="Create">
+</form>
+{% endif %}

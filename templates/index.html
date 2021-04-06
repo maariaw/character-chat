@@ -5,6 +5,13 @@
 <p>Logged in as {{ session.username }} by role {{ session.role }}</p>
 {% if (session.role == 2) %}
 <p>This is a GM account</p>
+<h3>Your campaigns:</h3>
+<a href="/newcampaign">Start a new campaign</a>
+<ul>
+    {% for campaign in campaigns %}
+    <li>{{ campaign.title }}</li>
+    {% endfor %}
+</ul>
 {% else %}
 <p>This is a player account</p>
 {% endif %}
