@@ -34,6 +34,9 @@ def register():
     if len(username) < 1 or len(username) > 20:
         return render_template(
             "index.html", error="Username has to be 1-20 characters long")
+    if users.user_exists(username):
+        return render_template(
+            "index.html", error="Username is already in use")
     password1 = request.form["password1"]
     if len(password1) < 8 or len(password1) > 32:
         return render_template(

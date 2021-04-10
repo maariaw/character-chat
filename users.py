@@ -38,3 +38,8 @@ def register(username, password, role):
     except:
         return "Could not register account"
     return log_in(username, password)
+
+def user_exists(username):
+    sql = "SELECT 1 FROM users WHERE name=:username"
+    result = db.session.execute(sql, {"username":username})
+    return result.fetchone != None
