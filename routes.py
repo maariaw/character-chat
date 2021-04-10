@@ -7,7 +7,8 @@ import campaigns
 @app.route("/")
 def index():
     if session.get("role", 0) == 2:
-        campaign_list = campaigns.get_created_campaigns(session.get("user_id", 0))
+        campaign_list = campaigns.get_created_campaigns(
+            session.get("user_id", 0))
     else:
         campaign_list = []
     return render_template("index.html", campaigns=campaign_list)
@@ -49,8 +50,12 @@ def register():
     if len(password) > 32:
         return render_template("index.html", error="Password is too long")
     hash_value = generate_password_hash(password)
-    sql = "INSERT INTO users (name, password, role) VALUES (:username, :password, :account)"
-    db.session.execute(sql, {"username":username, "password":hash_value, "account":account_type})
+    sql = """INSERT INTO users (name, password, role)
+             VALUES (:username, :password, :account)"""
+    db.session.execute(
+        sql,
+        {"username":username, "password":hash_value, "account":account_type}
+        )
     db.session.commit()
     session["username"] = username
     session["role"] = account_type
@@ -67,13 +72,18 @@ def create_campaign():
     if len(title) > 100:
         return render_template("newcampaign.html", error="Title is too long")
     if len(password) < 8:
-        return render_template("newcampaign.html", error="Password is too short")
+        return render_template(
+            "newcampaign.html", error="Password is too short")
     if len(password) > 32:
-        return render_template("newcampaign.html", error="Password is too long")
+        return render_template(
+            "newcampaign.html", error="Password is too long")
     hash_value = generate_password_hash(password)
     creator_id = session.get("user_id", 0)
     sql = """INSERT INTO campaigns (title, creator_id, created_at, password)
              VALUES (:title, :creator_id, NOW(), :password)"""
-    db.session.execute(sql, {"title":title, "creator_id":creator_id, "password":hash_value})
+    db.session.execute(
+        sql,
+        {"title":title, "creator_id":creator_id, "password":hash_value}
+        )
     db.session.commit()
     return redirect("/")
