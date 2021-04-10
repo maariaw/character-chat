@@ -1,4 +1,4 @@
-from app import db
+from db import db
 
 def get_created_campaigns(user_id):
     sql = """SELECT id, title, created_at FROM campaigns
