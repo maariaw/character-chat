@@ -31,15 +31,22 @@ def logout():
 @app.route("/register", methods=["POST"])
 def register():
     username = request.form["username"]
-    password = request.form["password"]
+    if len(username) < 1 or len(username) > 20:
+        return render_template(
+            "index.html", error="Username has to be 1-20 characters long")
+    password1 = request.form["password1"]
+    if len(password1) < 8 or len(password1) > 32:
+        return render_template(
+            "index.html", error="Password has to be 8-32 characters long")
+    password2 = request.form["password2"]
+    if password1 != password2:
+        return render_template(
+            "index.html", error="Password was retyped incorrectly")
     account_type = request.form["account"]
-    if len(username) > 20:
-        return render_template("index.html", error="Username is too long")
-    if len(password) < 8:
-        return render_template("index.html", error="Password is too short")
-    if len(password) > 32:
-        return render_template("index.html", error="Password is too long")
-    hash_value = generate_password_hash(password)
+    if account_type != "1" and account_type != "2":
+        return render_template(
+            "index.html", error="Account type not recognized")
+    hash_value = generate_password_hash(password1)
     sql = """INSERT INTO users (name, password, role)
              VALUES (:username, :password, :account)"""
     db.session.execute(
@@ -49,6 +56,8 @@ def register():
     db.session.commit()
     session["username"] = username
     session["role"] = account_type
+    # Change this after moving to users.py
+    session["user_id"] = 0
     return redirect("/")
 
 @app.route("/newcampaign")
