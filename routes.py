@@ -46,19 +46,11 @@ def register():
     if account_type != "1" and account_type != "2":
         return render_template(
             "index.html", error="Account type not recognized")
-    hash_value = generate_password_hash(password1)
-    sql = """INSERT INTO users (name, password, role)
-             VALUES (:username, :password, :account)"""
-    db.session.execute(
-        sql,
-        {"username":username, "password":hash_value, "account":account_type}
-        )
-    db.session.commit()
-    session["username"] = username
-    session["role"] = account_type
-    # Change this after moving to users.py
-    session["user_id"] = 0
-    return redirect("/")
+    error_message = users.register(username, password1, account_type)
+    if error_message == "no error":
+        return redirect("/")
+    else:
+        return render_template("index.html", error=error_message)
 
 @app.route("/newcampaign")
 def new_campaign():

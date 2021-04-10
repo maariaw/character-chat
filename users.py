@@ -24,3 +24,17 @@ def log_in(username, password):
         else:
             error = "Incorrect password"
     return error
+
+def register(username, password, role):
+    hash_value = generate_password_hash(password)
+    try:
+        sql = """INSERT INTO users (name, password, role)
+                VALUES (:username, :password, :role)"""
+        db.session.execute(
+            sql,
+            {"username":username, "password":hash_value, "role":role}
+            )
+        db.session.commit()
+    except:
+        return "Could not register account"
+    return log_in(username, password)
