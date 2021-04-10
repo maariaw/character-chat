@@ -17,21 +17,11 @@ def index():
 def login():
     username = request.form["username"]
     password = request.form["password"]
-    sql = "SELECT password, id, role FROM users WHERE name=:username"
-    result = db.session.execute(sql, {"username":username})
-    user = result.fetchone()
-    if user == None:
-        return render_template("index.html", error="Username not registered")
+    error_message = users.log_in(username, password)
+    if error_message == "no error":
+        return redirect("/")
     else:
-        hash_value = user[0]
-        if check_password_hash(hash_value, password):
-            session["username"] = username
-            session["user_id"] = user[1]
-            role = user[2]
-            session["role"] = role
-            return redirect("/")
-        else:
-            return render_template("index.html", error="Incorrect password")
+        return render_template("index.html", error=error_message)
 
 @app.route("/logout")
 def logout():
