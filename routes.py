@@ -2,7 +2,7 @@ from app import app
 from db import db
 from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
-import campaigns
+import users, campaigns
 
 @app.route("/")
 def index():
@@ -35,7 +35,7 @@ def login():
 
 @app.route("/logout")
 def logout():
-    del session["username"]
+    users.log_out()
     return redirect("/")
 
 @app.route("/register", methods=["POST"])
