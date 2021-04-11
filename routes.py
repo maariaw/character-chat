@@ -73,15 +73,7 @@ def create_campaign():
     if len(password) > 32:
         return render_template(
             "newcampaign.html", error="Password is too long")
-    hash_value = generate_password_hash(password)
-    creator_id = session.get("user_id", 0)
-    sql = """INSERT INTO campaigns (title, creator_id, created_at, password)
-             VALUES (:title, :creator_id, NOW(), :password)"""
-    db.session.execute(
-        sql,
-        {"title":title, "creator_id":creator_id, "password":hash_value}
-        )
-    db.session.commit()
+    campaigns.create_campaign(title, password)
     return redirect("/")
 
 @app.route("/account_status", methods=["POST", "GET"])
