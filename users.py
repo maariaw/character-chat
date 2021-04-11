@@ -10,11 +10,13 @@ def log_out():
 
 def log_in(username, password):
     error = "no error"
-    sql = "SELECT password, id, role FROM users WHERE name=:username"
+    sql = "SELECT password, id, role, visible FROM users WHERE name=:username"
     result = db.session.execute(sql, {"username":username})
     user = result.fetchone()
     if not user:
         error = "Username not registered"
+    elif user[3] == 0:
+        error = "Account has been deactivated"
     else:
         hash_value = user[0]
         if check_password_hash(hash_value, password):
@@ -28,8 +30,8 @@ def log_in(username, password):
 def register(username, password, role):
     hash_value = generate_password_hash(password)
     try:
-        sql = """INSERT INTO users (name, password, role)
-                VALUES (:username, :password, :role)"""
+        sql = """INSERT INTO users (name, password, role, visible)
+                VALUES (:username, :password, :role, 1)"""
         db.session.execute(
             sql,
             {"username":username, "password":hash_value, "role":role}
@@ -42,4 +44,40 @@ def register(username, password, role):
 def user_exists(username):
     sql = "SELECT 1 FROM users WHERE name=:username"
     result = db.session.execute(sql, {"username":username})
-    return result.fetchone != None
+    return result.fetchone() != None
+
+def deactivate_account(password):
+    username = session.get("username")
+    sql = "SELECT id, password, visible FROM users WHERE name=:username"
+    result = db.session.execute(sql, {"username":username})
+    user = result.fetchone()
+    if not user:
+        return False
+    if check_password_hash(user[1], password) and user[2] == 1:
+        sql = "UPDATE users SET visible=0 WHERE id=:user_id"
+        db.session.execute(sql, {"user_id":user[0]})
+        db.session.commit()
+        log_out()
+        return True
+    else:
+        return False
+
+def reactivate_account(username, password):
+    sql = "SELECT id, password, visible FROM users WHERE name=:username"
+    result = db.session.execute(sql, {"username":username})
+    user = result.fetchone()
+    if not user:
+        return False
+    if check_password_hash(user[1], password) and user[2] == 0:
+        sql = "UPDATE users SET visible=1 WHERE id=:user_id"
+        db.session.execute(sql, {"user_id":user[0]})
+        db.session.commit()
+        return True
+    else:
+        return False
+
+def account_active(username):
+    sql = "SELECT visible FROM users WHERE name=:username"
+    result = db.session.execute(sql, {"username":username})
+    visibility = result.fetchone()[0]
+    return visibility == 1

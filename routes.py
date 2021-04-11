@@ -81,3 +81,31 @@ def create_campaign():
         )
     db.session.commit()
     return redirect("/")
+
+@app.route("/account_status", methods=["POST", "GET"])
+def change_account_status():
+    if request.method == "GET":
+        return render_template("account.html")
+
+    if request.method == "POST":
+        if session.get("username"):
+            password = request.form["deact-password"]
+            if users.deactivate_account(password):
+                return render_template(
+                    "/account.html", message="Account deactivated.")
+            else:
+                return render_template(
+                    "/account.html",
+                    message="Account could not be deactivated."
+                    )
+        else:
+            username = request.form["username"]
+            password = request.form["react-password"]
+            if users.reactivate_account(username, password):
+                return render_template(
+                    "/account.html", message="Account activated.")
+            else:
+                return render_template(
+                    "/account.html",
+                    message="Account could not be activated."
+                    )

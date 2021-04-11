@@ -1,0 +1,44 @@
+<p>{{ message }}</p>
+<a href="/">Main page</a>
+<h1>Account status</h1>
+{% if session.username %}
+<p>Logged in as {{ session.username }}</p>
+<p>
+    Deactivate your account by entering your password below and 
+    clicking "Deactivate". You will be removed from any chats and 
+    campaigns you were participating in. Reactivation will not bring 
+    them back.
+</p>
+<form action="/account_status" method="POST">
+    <p>
+        <label>
+            Password:
+            <br>
+            <input type="password" name="deact-password">
+        </label>
+    </p>
+    <input type="submit" value="Deactivate">
+</form>
+{% else %}
+<p>
+    To reactivate an account, type in the username and password of a 
+    deactivated account and click "Activate".
+</p>
+<form action="/account_status" method="POST">
+    <p>
+        <label>
+            Username:
+            <br>
+            <input type="text" name="username">
+        </label>
+    </p>
+    <p>
+        <label>
+            Password:
+            <br>
+            <input type="password" name="react-password">
+        </label>
+    </p>
+    <input type="submit" value="Reactivate">
+</form>
+{% endif %}
