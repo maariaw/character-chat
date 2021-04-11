@@ -7,6 +7,7 @@ def log_out():
     del session["username"]
     del session["role"]
     del session["user_id"]
+    del session["csrf_token"]
 
 def log_in(username, password):
     error = "no error"
@@ -23,6 +24,7 @@ def log_in(username, password):
             session["username"] = username
             session["user_id"] = user[1]
             session["role"] = user[2]
+            session["csrf_token"] = os.urandom(16).hex()
         else:
             error = "Incorrect password"
     return error
