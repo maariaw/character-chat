@@ -13,6 +13,7 @@ Sometimes role playing campaigns are packed full of action, but leave little tim
 * A user can deactivate and reactivate their account
 * A GM can create a campaign with a unique name
 * A GM can set a password for their campaign
+* A GM can view campaigns they have created
 
 ### Planned
 * A GM can delete their campaign
