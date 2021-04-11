@@ -103,3 +103,13 @@ def change_account_status():
                     "/account.html",
                     message="Account could not be activated."
                     )
+
+@app.route("/campaign/<int:id>", methods=["GET"])
+def campaign_page(id):
+    # Check here if user has access rights
+    if campaigns.is_active(id):
+        campaign = campaigns.get_campaign_info(id)
+        players = campaigns.get_campaign_players(id)
+        return render_template(
+            "campaign.html", campaign=campaign, players=players)
+    return render_template("error.html", error="Campaign could not be loaded")

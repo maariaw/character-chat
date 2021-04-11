@@ -14,7 +14,7 @@
 <a href="/newcampaign">Start a new campaign</a>
 <ul>
     {% for campaign in campaigns %}
-    <li>{{ campaign.title }}</li>
+    <li><a href="/campaign/{{ campaign.id }}">{{ campaign.title }}</a></li>
     {% endfor %}
 </ul>
 {% else %}

@@ -1,0 +1,10 @@
+<a href="/">Main page</a>
+<h1>{{ campaign.title }}</h1>
+<p>GM: {{ campaign.gm }}</p>
+<p>Players:</p>
+<ul>
+    {% for player in players %}
+    <li>{{ player }}</li>
+    {% endfor %}
+</ul>
+<p>Created at: {{ campaign.creation_time.strftime("%x") }}</p>
