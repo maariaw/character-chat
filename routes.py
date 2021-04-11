@@ -61,6 +61,8 @@ def new_campaign():
 
 @app.route("/createcampaign", methods=["POST"])
 def create_campaign():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     title = request.form["title"]
     password = request.form["password"]
     if len(title) > 100:
