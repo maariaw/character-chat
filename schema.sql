@@ -12,7 +12,8 @@ CREATE TABLE campaigns (
   creator_id INTEGER REFERENCES users,
   created_at TIMESTAMP,
   password TEXT,
-  visible INTEGER
+  visible INTEGER,
+  UNIQUE (title, creator_id)
 );
 
 CREATE TABLE chats (

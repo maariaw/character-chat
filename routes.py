@@ -65,8 +65,15 @@ def create_campaign():
         abort(403)
     title = request.form["title"]
     password = request.form["password"]
+    if len(title) < 0:
+        return render_template("newcampaign.html", error="Title cannot be empty")
     if len(title) > 100:
         return render_template("newcampaign.html", error="Title is too long")
+    if campaigns.is_duplicate(title, session.get("user_id", 0)):
+        return render_template(
+            "newcampaign.html",
+            error="You cannot create two campaigns with the same title"
+            )
     if len(password) < 8:
         return render_template(
             "newcampaign.html", error="Password is too short")
