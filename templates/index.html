@@ -3,6 +3,9 @@
     <br>
     ACCOUNTS WILL BE WIPED OFTEN DURING DEVELOPMENT
 </b></p>
+{% if message %}
+<p>{{ message }}</p>
+{% endif %}
 {% if error %}
 <p>Action not successful: {{ error }}</p>
 {% endif %}

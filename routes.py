@@ -118,5 +118,22 @@ def campaign_page(id):
         campaign = campaigns.get_campaign_info(id)
         players = campaigns.get_campaign_players(id)
         return render_template(
-            "campaign.html", campaign=campaign, players=players)
+            "campaign.html",
+            campaign=campaign,
+            players=players,
+            id=id,
+            )
     return render_template("error.html", error="Campaign could not be loaded")
+
+@app.route("/campaign/<int:id>/delete", methods=["POST"])
+def delete_campaign(id):
+    password = request.form["password"]
+    if campaigns.check_password(id, password):
+        if campaigns.deactivate_campaign(id):
+            return render_template(
+                "index.html", message="Campaign was deleted successfully")
+        else:
+            return render_template(
+                "error.html", error="Campaign could not be deleted")
+    return render_template(
+            "error.html", error="Campaign password was incorrect")

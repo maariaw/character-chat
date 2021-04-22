@@ -48,3 +48,22 @@ def is_duplicate(title, user_id):
     result = db.session.execute(sql, {"user_id":user_id}).fetchall()
     titles = [item[0] for item in result]
     return title in titles
+
+def deactivate_campaign(campaign_id):
+    user_id = session.get("user_id")
+    sql = "SELECT creator_id, visible FROM campaigns WHERE id=:campaign_id"
+    result = db.session.execute(sql, {"campaign_id":campaign_id}).fetchone()
+    creator_id = result[0]
+    status = result[1]
+    if not creator_id or user_id != creator_id or status == 0:
+        return False
+    sql = "UPDATE campaigns SET visible=0 WHERE id=:campaign_id"
+    db.session.execute(sql, {"campaign_id":campaign_id})
+    db.session.commit()
+    return True
+
+def check_password(campaign_id, password):
+    sql = "SELECT password FROM campaigns WHERE id=:campaign_id"
+    result = db.session.execute(sql, {"campaign_id":campaign_id}).fetchone()
+    password_hash = result[0]
+    return check_password_hash(password_hash, password)

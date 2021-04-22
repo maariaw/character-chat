@@ -8,3 +8,20 @@
     {% endfor %}
 </ul>
 <p>Created at: {{ campaign.creation_time.strftime("%x") }}</p>
+{% if session.username == campaign.gm %}
+<h3>Delete campaign</h3>
+<p>
+    To delete this campaign, enter the campaign password and click 
+    "Delete campaign".
+</p>
+<form action="/campaign/{{ id }}/delete" method="POST">
+    <p>
+        <label>
+            Campaign password:
+            <br>
+            <input type="password" name="password">
+        </label>
+    </p>
+    <input type="submit" value="Delete campaign">
+</form>
+{% endif %}
