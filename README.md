@@ -14,13 +14,13 @@ Sometimes role playing campaigns are packed full of action, but leave little tim
 * A GM can create a campaign with a unique name
 * A GM can set a password for their campaign
 * A GM can view campaigns they have created
-
-### Planned
 * A GM can delete their campaign
 * A player can join a campaign if they know the password
-* A player can leave a campaign
 * Users can see other users in a campaign they are in
 * Users can access a list of campaigns they are in
+
+### Planned
+* A player can leave a campaign
 * Users can search for campaigns by name or creator
 * A GM can start a chat in their campaign, give it a title and choose participating players
 * A GM can close a chat in their campaign
