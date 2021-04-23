@@ -72,11 +72,15 @@ def check_password(campaign_id, password):
     password_hash = result[0]
     return check_password_hash(password_hash, password)
 
-def has_access(campaign_id, user_id):
+def is_creator(campaign_id, user_id):
     sql = "SELECT creator_id FROM campaigns WHERE id=:campaign_id"
     result = db.session.execute(sql, {"campaign_id":campaign_id}).fetchone()
     creator = result[0]
-    is_creator = user_id == creator
+    return user_id == creator
+
+def has_access(campaign_id, user_id):
+    if is_creator(campaign_id, user_id):
+        return True
     sql = """SELECT 1 FROM campaign_users
              WHERE user_id=:user_id AND campaign_id=:campaign_id"""
     result = db.session.execute(
