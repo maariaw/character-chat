@@ -28,7 +28,11 @@ def is_active(campaign_id):
     return status == 1
 
 def get_campaign_info(campaign_id):
-    sql = """SELECT c.title title, u.name gm, c.created_at creation_time
+    sql = """SELECT
+                 c.id id,
+                 c.title title,
+                 u.name gm,
+                 c.created_at creation_time
              FROM campaigns c, users u
              WHERE c.id=:campaign_id AND u.id=c.creator_id"""
     result = db.session.execute(sql, {"campaign_id":campaign_id})
@@ -40,8 +44,8 @@ def get_campaign_players(campaign_id):
              WHERE c.campaign_id=:campaign_id
              AND u.id=c.user_id
              AND u.visible=1"""
-    result = db.session.execute(sql, {"campaign_id":campaign_id})
-    players = result.fetchall()
+    result = db.session.execute(sql, {"campaign_id":campaign_id}).fetchall()
+    players = [item[0] for item in result]
     return players
 
 def is_duplicate(title, user_id):
@@ -80,3 +84,26 @@ def has_access(campaign_id, user_id):
         sql, {"user_id":user_id, "campaign_id":campaign_id})
     is_player = result.fetchone() != None
     return is_creator or is_player
+
+def get_all():
+    sql = "SELECT id FROM campaigns WHERE visible=1 ORDER BY created_at"
+    result = db.session.execute(sql).fetchall()
+    campaign_list = []
+    for item in result:
+        id = item[0]
+        campaign = get_campaign_info(id)
+        print(campaign)
+        campaign_list.append(campaign)
+    return  campaign_list
+
+def add_player(campaign_id, user_id):
+    if not is_active(campaign_id):
+        return False
+    try:
+        sql = """INSERT INTO campaign_users (user_id, campaign_id, visible)
+                VALUES (:user_id, :campaign_id, 1)"""
+        db.session.execute(sql, {"user_id":user_id, "campaign_id":campaign_id})
+        db.session.commit()
+    except:
+        return False
+    return True

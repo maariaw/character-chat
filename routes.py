@@ -141,3 +141,33 @@ def delete_campaign(id):
                 "error.html", error="Campaign could not be deleted")
     return render_template(
             "error.html", error="Campaign password was incorrect")
+
+@app.route("/campaigns", methods=["GET"])
+def list_campaigns():
+    user_role = session.get("role", 0)
+    print("Role is ", user_role)
+    if user_role > 0:
+        campaign_list = campaigns.get_all()
+        print(campaign_list)
+        return render_template("listing.html", campaigns=campaign_list)
+    return render_template("error.html", error="Log in to see campaigns")
+
+@app.route("/campaign/<int:id>/join", methods=["GET", "POST"])
+def join_campaign(id):
+    user_id = session.get("user_id", 0)
+    user_role = session.get("role", 0)
+    if user_role != 1:
+            return render_template(
+                "error.html",
+                error="You need to be logged in as player to join a campaign")
+    url = "/campaign/" + str(id)
+    if request.method == "GET":
+        if campaigns.has_access(id, user_id):
+            return redirect(url)
+        this_campaign = campaigns.get_campaign_info(id)
+        return render_template("join.html", campaign=this_campaign)
+    if request.method == "POST":
+        password = request.form["password"]
+        if campaigns.check_password(id, password):
+            campaigns.add_player(id, user_id)
+            return redirect(url)

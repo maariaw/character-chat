@@ -1,0 +1,14 @@
+<a href="/">Main page</a>
+<h1>Campaigns</h1>
+<ul>
+    {% for campaign in campaigns %}
+    <li>
+        <p>
+            <a href="/campaign/{{ campaign.id }}/join">Join</a>
+            {{ campaign.title }}
+            <br>
+            by {{ campaign.gm }} at {{ campaign.creation_time.strftime("%x") }}
+        </p>
+    </li>
+    {% endfor %}
+</ul>

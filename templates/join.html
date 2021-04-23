@@ -1,0 +1,14 @@
+<a href="/">Main page</a>
+<h1>{{ campaign.title }}</h1>
+<p>GM: {{ campaign.gm }}</p>
+<p>To join this campaign, ask your GM for the password and enter it here</p>
+<form action="/campaign/{{ campaign.id }}/join" method="POST">
+    <p>
+        <label>
+            Campaign password:
+            <br>
+            <input type="password" name="password">
+        </label>
+    </p>
+    <input type="submit" value="Join">
+</form>
