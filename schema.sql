@@ -39,7 +39,7 @@ CREATE TABLE campaign_users (
   visible INTEGER
 );
 
-CREATE TABLE "chat_users" (
+CREATE TABLE chat_users (
   user_id INTEGER REFERENCES users,
   chat_id INTEGER REFERENCES chats,
   visible INTEGER

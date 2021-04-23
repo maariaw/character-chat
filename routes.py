@@ -113,17 +113,21 @@ def change_account_status():
 
 @app.route("/campaign/<int:id>", methods=["GET"])
 def campaign_page(id):
-    # Check here if user has access rights
-    if campaigns.is_active(id):
-        campaign = campaigns.get_campaign_info(id)
-        players = campaigns.get_campaign_players(id)
+    user_id = session.get("user_id", 0)
+    if campaigns.has_access(id, user_id):
+        if campaigns.is_active(id):
+            campaign = campaigns.get_campaign_info(id)
+            players = campaigns.get_campaign_players(id)
+            return render_template(
+                "campaign.html",
+                campaign=campaign,
+                players=players,
+                id=id,
+                )
         return render_template(
-            "campaign.html",
-            campaign=campaign,
-            players=players,
-            id=id,
-            )
-    return render_template("error.html", error="Campaign could not be loaded")
+            "error.html", error="Campaign could not be loaded")
+    return render_template(
+        "error.html", error="You don't have access to this campaign")
 
 @app.route("/campaign/<int:id>/delete", methods=["POST"])
 def delete_campaign(id):

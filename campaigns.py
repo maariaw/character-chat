@@ -16,7 +16,8 @@ def create_campaign(title, password):
 
 def get_created_campaigns(user_id):
     sql = """SELECT id, title, created_at FROM campaigns
-             WHERE creator_id=:user_id ORDER BY created_at"""
+             WHERE creator_id=:user_id AND visible=1
+             ORDER BY created_at"""
     return db.session.execute(sql, {"user_id":user_id}).fetchall()
 
 def is_active(campaign_id):
@@ -67,3 +68,15 @@ def check_password(campaign_id, password):
     result = db.session.execute(sql, {"campaign_id":campaign_id}).fetchone()
     password_hash = result[0]
     return check_password_hash(password_hash, password)
+
+def has_access(campaign_id, user_id):
+    sql = "SELECT creator_id FROM campaigns WHERE id=:campaign_id"
+    result = db.session.execute(sql, {"campaign_id":campaign_id}).fetchone()
+    creator = result[0]
+    is_creator = user_id == creator
+    sql = """SELECT 1 FROM campaign_users
+             WHERE user_id=:user_id AND campaign_id=:campaign_id"""
+    result = db.session.execute(
+        sql, {"user_id":user_id, "campaign_id":campaign_id})
+    is_player = result.fetchone() != None
+    return is_creator or is_player
