@@ -6,8 +6,12 @@ import users, campaigns
 
 @app.route("/")
 def index():
-    if session.get("role", 0) == 2:
+    role = session.get("role", 0)
+    if role == 2:
         campaign_list = campaigns.get_created_campaigns(
+            session.get("user_id", 0))
+    if role == 1:
+        campaign_list = campaigns.get_joined_campaigns(
             session.get("user_id", 0))
     else:
         campaign_list = []

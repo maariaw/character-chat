@@ -24,7 +24,6 @@ def is_active(campaign_id):
     sql = "SELECT visible FROM campaigns WHERE id=:campaign_id"
     result = db.session.execute(sql, {"campaign_id":campaign_id})
     status = result.fetchone()[0]
-    print("Campaign status: ", status)
     return status == 1
 
 def get_campaign_info(campaign_id):
@@ -92,7 +91,6 @@ def get_all():
     for item in result:
         id = item[0]
         campaign = get_campaign_info(id)
-        print(campaign)
         campaign_list.append(campaign)
     return  campaign_list
 
@@ -107,3 +105,15 @@ def add_player(campaign_id, user_id):
     except:
         return False
     return True
+
+def get_joined_campaigns(user_id):
+    sql = """SELECT c.id FROM campaigns c, campaign_users u
+            WHERE c.visible=1 AND c.id=u.campaign_id AND u.user_id=:user_id
+            ORDER BY created_at"""
+    result = db.session.execute(sql, {"user_id":user_id}).fetchall()
+    campaign_list = []
+    for item in result:
+        id = item[0]
+        campaign = get_campaign_info(id)
+        campaign_list.append(campaign)
+    return  campaign_list

@@ -13,16 +13,16 @@
 <p>Logged in as {{ session.username }} by role {{ session.role }}</p>
 {% if (session.role == 2) %}
 <p>This is a GM account</p>
-<h3>Your campaigns:</h3>
 <a href="/newcampaign">Start a new campaign</a>
+{% else %}
+<p>This is a player account</p>
+{% endif %}
+<h3>Your campaigns:</h3>
 <ul>
     {% for campaign in campaigns %}
     <li><a href="/campaign/{{ campaign.id }}">{{ campaign.title }}</a></li>
     {% endfor %}
 </ul>
-{% else %}
-<p>This is a player account</p>
-{% endif %}
 <a href="/logout">Log out</a>
 <a href="/campaigns">See all campaigns</a>
 {% else %}
