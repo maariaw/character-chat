@@ -136,6 +136,10 @@ def campaign_page(id):
 
 @app.route("/campaign/<int:id>/delete", methods=["POST"])
 def delete_campaign(id):
+    user_id = session.get("user_id", 0)
+    if not campaigns.is_creator(campaign_id, user_id):
+        return render_template(
+            "error.html", error="No authority")
     password = request.form["password"]
     if campaigns.check_password(id, password):
         if campaigns.deactivate_campaign(id):
