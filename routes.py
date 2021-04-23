@@ -174,3 +174,26 @@ def join_campaign(id):
         if campaigns.check_password(id, password):
             campaigns.add_player(id, user_id)
             return redirect(url)
+
+@app.route("/campaign/<int:id>/leave", methods=["GET", "POST"])
+def leave_campaign(id):
+    user_id = session.get("user_id", 0)
+    if not campaigns.has_access(id, user_id):
+        return render_template(
+            "error.html", error="You don't have access to this campaign")
+    if request.method == "GET":
+        this_campaign = campaigns.get_campaign_info(id)
+        return render_template("leave.html", campaign=this_campaign)
+    if request.method == "POST":
+        username = session.get("username")
+        password = request.form["password"]
+        if users.check_password(username, password):
+            if campaigns.remove_user_from_campaign(id, user_id):
+                return redirect("/")
+            else:
+                return render_template(
+                    "error.html",
+                    error="Could not remove player from campaign")
+        else:
+            return render_template(
+                    "error.html", error="Password was incorrect")

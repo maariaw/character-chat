@@ -1,0 +1,14 @@
+<a href="/">Main page</a>
+<h1>{{ campaign.title }}</h1>
+<p>GM: {{ campaign.gm }}</p>
+<p>To leave this campaign, enter your password and click "Leave"</p>
+<form action="/campaign/{{ campaign.id }}/leave" method="POST">
+    <p>
+        <label>
+            Password:
+            <br>
+            <input type="password" name="password">
+        </label>
+    </p>
+    <input type="submit" value="Leave">
+</form>

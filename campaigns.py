@@ -120,3 +120,13 @@ def get_joined_campaigns(user_id):
         campaign = get_campaign_info(id)
         campaign_list.append(campaign)
     return  campaign_list
+
+def remove_user_from_campaign(campaign_id, user_id):
+    try:
+        sql = """DELETE FROM campaign_users
+                WHERE user_id=:user_id AND campaign_id=:campaign_id"""
+        db.session.execute(sql, {"user_id":user_id, "campaign_id":campaign_id})
+        db.session.commit()
+        return True
+    except:
+        return False
