@@ -10,7 +10,7 @@ def index():
     if role == 2:
         campaign_list = campaigns.get_created_campaigns(
             session.get("user_id", 0))
-    if role == 1:
+    elif role == 1:
         campaign_list = campaigns.get_joined_campaigns(
             session.get("user_id", 0))
     else:
@@ -150,10 +150,8 @@ def delete_campaign(id):
 @app.route("/campaigns", methods=["GET"])
 def list_campaigns():
     user_role = session.get("role", 0)
-    print("Role is ", user_role)
     if user_role > 0:
         campaign_list = campaigns.get_all()
-        print(campaign_list)
         return render_template("listing.html", campaigns=campaign_list)
     return render_template("error.html", error="Log in to see campaigns")
 

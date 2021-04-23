@@ -85,8 +85,7 @@ def has_access(campaign_id, user_id):
              WHERE user_id=:user_id AND campaign_id=:campaign_id"""
     result = db.session.execute(
         sql, {"user_id":user_id, "campaign_id":campaign_id})
-    is_player = result.fetchone() != None
-    return is_creator or is_player
+    return result.fetchone() != None
 
 def get_all():
     sql = "SELECT id FROM campaigns WHERE visible=1 ORDER BY created_at"
