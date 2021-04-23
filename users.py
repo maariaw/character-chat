@@ -48,16 +48,10 @@ def user_exists(username):
     result = db.session.execute(sql, {"username":username})
     return result.fetchone() != None
 
-def deactivate_account(password):
-    username = session.get("username")
-    sql = "SELECT id, password, visible FROM users WHERE name=:username"
-    result = db.session.execute(sql, {"username":username})
-    user = result.fetchone()
-    if not user:
-        return False
-    if check_password_hash(user[1], password) and user[2] == 1:
-        sql = "UPDATE users SET visible=0 WHERE id=:user_id"
-        db.session.execute(sql, {"user_id":user[0]})
+def deactivate_account(username, password):
+    if check_password(username, password) and account_active(username):
+        sql = "UPDATE users SET visible=0 WHERE name=:username"
+        db.session.execute(sql, {"username":username})
         db.session.commit()
         log_out()
         return True
@@ -65,14 +59,9 @@ def deactivate_account(password):
         return False
 
 def reactivate_account(username, password):
-    sql = "SELECT id, password, visible FROM users WHERE name=:username"
-    result = db.session.execute(sql, {"username":username})
-    user = result.fetchone()
-    if not user:
-        return False
-    if check_password_hash(user[1], password) and user[2] == 0:
-        sql = "UPDATE users SET visible=1 WHERE id=:user_id"
-        db.session.execute(sql, {"user_id":user[0]})
+    if check_password(username, password) and not account_active(username):
+        sql = "UPDATE users SET visible=1 WHERE name=:username"
+        db.session.execute(sql, {"username":username})
         db.session.commit()
         return True
     else:
@@ -83,3 +72,11 @@ def account_active(username):
     result = db.session.execute(sql, {"username":username})
     visibility = result.fetchone()[0]
     return visibility == 1
+
+def check_password(username, password):
+    sql = "SELECT password FROM users WHERE name=:username"
+    result = db.session.execute(sql, {"username":username})
+    user = result.fetchone()
+    if not user:
+        return False
+    return check_password_hash(user[0], password)
