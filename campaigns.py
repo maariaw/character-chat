@@ -47,6 +47,11 @@ def get_campaign_players(campaign_id):
     players = [item[0] for item in result]
     return players
 
+def get_campaign_title(campaign_id):
+    sql = "SELECT title FROM campaigns WHERE id=:campaign_id"
+    result = db.session.execute(sql, {"campaign_id":campaign_id}).fetchone()
+    return result[0]
+
 def is_duplicate(title, user_id):
     sql = "SELECT title FROM campaigns WHERE creator_id=:user_id"
     result = db.session.execute(sql, {"user_id":user_id}).fetchall()

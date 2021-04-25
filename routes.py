@@ -2,7 +2,7 @@ from app import app
 from db import db
 from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
-import users, campaigns
+import users, campaigns, chats
 
 @app.route("/")
 def index():
@@ -200,3 +200,33 @@ def leave_campaign(id):
         else:
             return render_template(
                     "error.html", error="Password was incorrect")
+
+@app.route("/campaign/<int:id>/create-chat", methods=["GET", "POST"])
+def create_chat(id):
+    user_id = session.get("user_id", 0)
+    if not campaigns.is_creator(id, user_id):
+        return render_template(
+            "error.html", error="No authority")
+    if request.method == "GET":
+        campaign = campaigns.get_campaign_title(id)
+        players = campaigns.get_campaign_players(id)
+        return render_template(
+            "newchat.html", campaign=campaign, players=players, id=id)
+    if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
+        title = request.form["title"]
+        if len(title) < 0:
+            return render_template("newchat.html", error="Title cannot be empty")
+        if len(title) > 300:
+            return render_template("newchat.html", error="Title is too long")
+        chat_id = chats.create_chat(id, title)
+        chats.add_chatter(chat_id, user_id)
+        chatters = []
+        chatters.append(request.form["chatter"])
+        for chatter in chatters:
+            chatter_id = users.get_user_id(chatter)
+            if chatter_id:
+                chats.add_chatter(chat_id, chatter_id)
+        print(chats.get_chatters(chat_id))
+        return redirect("/campaign/" + str(id))

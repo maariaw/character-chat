@@ -80,3 +80,11 @@ def check_password(username, password):
     if not user:
         return False
     return check_password_hash(user[0], password)
+
+def get_user_id(username):
+    sql = "SELECT id FROM users WHERE name=:username"
+    result = db.session.execute(sql, {"username":username})
+    user = result.fetchone()
+    if not user:
+        return None
+    return user[0]
