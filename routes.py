@@ -59,11 +59,11 @@ def register():
     else:
         return render_template("index.html", error=error_message)
 
-@app.route("/newcampaign")
+@app.route("/new-campaign")
 def new_campaign():
     return render_template("newcampaign.html")
 
-@app.route("/createcampaign", methods=["POST"])
+@app.route("/create-campaign", methods=["POST"])
 def create_campaign():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
@@ -87,7 +87,7 @@ def create_campaign():
     campaigns.create_campaign(title, password)
     return redirect("/")
 
-@app.route("/account_status", methods=["POST", "GET"])
+@app.route("/account-status", methods=["POST", "GET"])
 def change_account_status():
     if request.method == "GET":
         return render_template("account.html")

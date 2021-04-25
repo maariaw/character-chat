@@ -13,7 +13,7 @@
 <p>Logged in as {{ session.username }} by role {{ session.role }}</p>
 {% if (session.role == 2) %}
 <p>This is a GM account</p>
-<a href="/newcampaign">Start a new campaign</a>
+<a href="/new-campaign">Start a new campaign</a>
 {% else %}
 <p>This is a player account</p>
 {% endif %}
@@ -81,4 +81,4 @@
 </form>
 {% endif %}
 <br>
-<a href="/account_status">Activate or deactivate an existing account</a>
+<a href="/account-status">Activate or deactivate an existing account</a>
