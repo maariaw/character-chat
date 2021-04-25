@@ -59,33 +59,32 @@ def register():
     else:
         return render_template("index.html", error=error_message)
 
-@app.route("/new-campaign")
-def new_campaign():
-    return render_template("newcampaign.html")
-
-@app.route("/create-campaign", methods=["POST"])
+@app.route("/create-campaign", methods=[ "GET", "POST"])
 def create_campaign():
-    if session["csrf_token"] != request.form["csrf_token"]:
-        abort(403)
-    title = request.form["title"]
-    password = request.form["password"]
-    if len(title) < 0:
-        return render_template("newcampaign.html", error="Title cannot be empty")
-    if len(title) > 100:
-        return render_template("newcampaign.html", error="Title is too long")
-    if campaigns.is_duplicate(title, session.get("user_id", 0)):
-        return render_template(
-            "newcampaign.html",
-            error="You cannot create two campaigns with the same title"
-            )
-    if len(password) < 8:
-        return render_template(
-            "newcampaign.html", error="Password is too short")
-    if len(password) > 32:
-        return render_template(
-            "newcampaign.html", error="Password is too long")
-    campaigns.create_campaign(title, password)
-    return redirect("/")
+    if request.method == "GET":
+        return render_template("newcampaign.html")
+    if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
+        title = request.form["title"]
+        password = request.form["password"]
+        if len(title) < 0:
+            return render_template("newcampaign.html", error="Title cannot be empty")
+        if len(title) > 100:
+            return render_template("newcampaign.html", error="Title is too long")
+        if campaigns.is_duplicate(title, session.get("user_id", 0)):
+            return render_template(
+                "newcampaign.html",
+                error="You cannot create two campaigns with the same title"
+                )
+        if len(password) < 8:
+            return render_template(
+                "newcampaign.html", error="Password is too short")
+        if len(password) > 32:
+            return render_template(
+                "newcampaign.html", error="Password is too long")
+        campaigns.create_campaign(title, password)
+        return redirect("/")
 
 @app.route("/account-status", methods=["POST", "GET"])
 def change_account_status():
