@@ -20,12 +20,12 @@ Sometimes role playing campaigns are packed full of action, but leave little tim
 * Users can access a list of campaigns they are in
 * A player can leave a campaign
 * A GM can start a chat in their campaign, give it a title and choose participating players (cannot see chat yet)
+* A GM can send messages in any chat in their campaign
+* A player can send messages in a chat they're a participant in
 
 ### Planned
 * Users can search for campaigns by name or creator
 * A GM can close a chat in their campaign
-* A GM can send messages in any chat in their campaign
-* A player can send messages in a chat they're a participant in
 * Users can access a list of chats they are participating in, showing the last message and its time stamp
 
 This app is being built as an assignment for Databases Lab course.
