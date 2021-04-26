@@ -6,6 +6,8 @@ Sometimes role playing campaigns are packed full of action, but leave little tim
 
 [_**TEST THE APP PROTOTYPE HERE**_](https://character-chatter.herokuapp.com/)
 
+App is still bare bones. Elements are in place, but no effort has been put towards looks and user friendliness yet, sorry about that! 
+
 ## Features:
 ### Completed
 * A user can create an account as either a player or a GM
