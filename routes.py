@@ -222,8 +222,7 @@ def create_chat(id):
             return render_template("newchat.html", error="Title is too long")
         chat_id = chats.create_chat(id, title)
         chats.add_chatter(chat_id, user_id)
-        chatters = []
-        chatters.append(request.form["chatter"])
+        chatters = request.form.getlist("chatter")
         for chatter in chatters:
             chatter_id = users.get_user_id(chatter)
             if chatter_id:
