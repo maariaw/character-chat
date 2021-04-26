@@ -88,3 +88,15 @@ def get_user_id(username):
     if not user:
         return None
     return user[0]
+
+def get_username(user_id):
+    sql = "SELECT name FROM users WHERE id=:user_id"
+    result = db.session.execute(sql, {"user_id":user_id})
+    user = result.fetchone()
+    if not user:
+        return None
+    return user[0]
+
+def check_csrf(csrf_token):
+    if session["csrf_token"] != csrf_token:
+        abort(403)

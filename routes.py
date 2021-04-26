@@ -64,8 +64,7 @@ def create_campaign():
     if request.method == "GET":
         return render_template("newcampaign.html")
     if request.method == "POST":
-        if session["csrf_token"] != request.form["csrf_token"]:
-            abort(403)
+        users.check_csrf(request.form["csrf_token"])
         title = request.form["title"]
         password = request.form["password"]
         if len(title) < 0:
@@ -173,6 +172,7 @@ def join_campaign(id):
         this_campaign = campaigns.get_campaign_info(id)
         return render_template("join.html", campaign=this_campaign)
     if request.method == "POST":
+        users.check_csrf(request.form["csrf_token"])
         password = request.form["password"]
         if campaigns.check_password(id, password):
             campaigns.add_player(id, user_id)
@@ -213,8 +213,7 @@ def create_chat(id):
         return render_template(
             "newchat.html", campaign=campaign, players=players, id=id)
     if request.method == "POST":
-        if session["csrf_token"] != request.form["csrf_token"]:
-            abort(403)
+        users.check_csrf(request.form["csrf_token"])
         title = request.form["title"]
         if len(title) < 0:
             return render_template("newchat.html", error="Title cannot be empty")
@@ -227,5 +226,4 @@ def create_chat(id):
             chatter_id = users.get_user_id(chatter)
             if chatter_id:
                 chats.add_chatter(chat_id, chatter_id)
-        print(chats.get_chatters(chat_id))
         return redirect("/campaign/" + str(id))
