@@ -114,40 +114,59 @@ def change_account_status():
                     message="Account could not be activated."
                     )
 
-@app.route("/campaign/<int:id>", methods=["GET"])
+@app.route("/campaign/<int:id>", methods=["GET", "POST"])
 def campaign_page(id):
     user_id = session.get("user_id", 0)
-    if campaigns.has_access(id, user_id):
-        if campaigns.is_active(id):
-            campaign = campaigns.get_campaign_info(id)
-            players = campaigns.get_campaign_players(id)
-            return render_template(
-                "campaign.html",
-                campaign=campaign,
-                players=players,
-                id=id,
-                )
+    if not campaigns.has_access(id, user_id):
+        return render_template(
+            "error.html", error="You don't have access to this campaign")
+    if not campaigns.is_active(id):
         return render_template(
             "error.html", error="Campaign could not be loaded")
-    return render_template(
-        "error.html", error="You don't have access to this campaign")
+    if request.method == "GET":
+        campaign = campaigns.get_campaign_info(id)
+        players = campaigns.get_campaign_players(id)
+        chatlist = chats.get_campaign_chats(id)
+        return render_template(
+            "campaign.html",
+            campaign=campaign,
+            players=players,
+            id=id,
+            chatlist=chatlist,
+            )
+    if request.method == "POST":
+        users.check_csrf(request.form["csrf_token"])
+        text = request.form["text"]
+        chat_id = request.form["chat_id"]
+        chats.add_message(chat_id, text)
+        return redirect("/campaign/" + str(id))
 
-@app.route("/campaign/<int:id>/delete", methods=["POST"])
+@app.route("/campaign/<int:id>/delete", methods=["GET", "POST"])
 def delete_campaign(id):
     user_id = session.get("user_id", 0)
     if not campaigns.is_creator(id, user_id):
         return render_template(
             "error.html", error="No authority")
-    password = request.form["password"]
-    if campaigns.check_password(id, password):
-        if campaigns.deactivate_campaign(id):
-            return render_template(
-                "index.html", message="Campaign was deleted successfully")
-        else:
-            return render_template(
-                "error.html", error="Campaign could not be deleted")
-    return render_template(
-            "error.html", error="Campaign password was incorrect")
+    if request.method == "GET":
+        campaign = campaigns.get_campaign_info(id)
+        players = campaigns.get_campaign_players(id)
+        return render_template(
+            "delete.html",
+            campaign=campaign,
+            players=players,
+            id=id,
+            )
+    if request.method == "POST":
+        users.check_csrf(request.form["csrf_token"])
+        password = request.form["password"]
+        if campaigns.check_password(id, password):
+            if campaigns.deactivate_campaign(id):
+                return redirect("/")
+            else:
+                return render_template(
+                    "error.html", error="Campaign could not be deleted")
+        return render_template(
+                "error.html", error="Campaign password was incorrect")
 
 @app.route("/campaigns", methods=["GET"])
 def list_campaigns():

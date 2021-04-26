@@ -1,0 +1,26 @@
+<a href="/">Main page</a>
+<h1>{{ campaign.title }}</h1>
+<p>GM: {{ campaign.gm }}</p>
+<p>Players:</p>
+<ul>
+    {% for player in players %}
+    <li>{{ player }}</li>
+    {% endfor %}
+</ul>
+<p>Created at: {{ campaign.creation_time.strftime("%x") }}</p>
+<h3>Delete campaign</h3>
+<p>
+    To delete this campaign, enter the campaign password and click 
+    "Delete campaign".
+</p>
+<form action="/campaign/{{ id }}/delete" method="POST">
+    <p>
+        <label>
+            Campaign password:
+            <br>
+            <input type="password" name="password">
+        </label>
+    </p>
+    <input type="submit" value="Delete campaign">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+</form>

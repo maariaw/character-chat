@@ -8,23 +8,41 @@
     {% endfor %}
 </ul>
 <p>Created at: {{ campaign.creation_time.strftime("%x") }}</p>
+{% for chat in chatlist %}
+<div>
+    <h2>{{ chat["title"] }}</h2>
+    <p>{{ chat["time"].strftime("%x") }}</p>
+    <p>Chat participants:</p>
+    <ul>
+        {% for chatter in chat["chatters"] %}
+        <li>{{ chatter }}</li>
+        {% endfor %}
+    </ul>
+    <div>
+        {% for message in chat["messages"] %}
+        <p>
+            {{ message["time"].strftime("%x") }} {{ message["username"] }} :
+            {{ message["text"] }}
+        </p>
+        {% endfor %}
+        {% if session.get("username") in chat["chatters"] %}
+        <form action="/campaign/{{ id }}" method="POST">
+            <label>
+                New message:
+                <input type="text" name="text" maxlength="1000">
+            </label>
+            <input type="submit" value="Send">
+            <input type="hidden" name="chat_id" value="{{ chat["id"] }}">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
 {% if session.username == campaign.gm %}
 <a href="/campaign/{{ id }}/create-chat">Start a new chat</a>
-<h3>Delete campaign</h3>
-<p>
-    To delete this campaign, enter the campaign password and click 
-    "Delete campaign".
-</p>
-<form action="/campaign/{{ id }}/delete" method="POST">
-    <p>
-        <label>
-            Campaign password:
-            <br>
-            <input type="password" name="password">
-        </label>
-    </p>
-    <input type="submit" value="Delete campaign">
-</form>
+<br>
+<a href="/campaign/{{ id }}/delete">Delete campaign</a>
 {% endif %}
 {% if session.username in players %}
 <a href="/campaign/{{ id }}/leave" method="GET">
