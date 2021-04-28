@@ -137,8 +137,9 @@ def campaign_page(id):
     if request.method == "POST":
         users.check_csrf(request.form["csrf_token"])
         text = request.form["text"]
-        chat_id = request.form["chat_id"]
-        chats.add_message(chat_id, text)
+        if 0 < len(text) <= 1000:
+            chat_id = request.form["chat_id"]
+            chats.add_message(chat_id, text)
         return redirect("/campaign/" + str(id))
 
 @app.route("/campaign/<int:id>/delete", methods=["GET", "POST"])
