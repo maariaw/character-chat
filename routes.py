@@ -172,10 +172,29 @@ def delete_campaign(id):
 @app.route("/campaigns", methods=["GET"])
 def list_campaigns():
     user_role = session.get("role", 0)
-    if user_role > 0:
+    if user_role == 0:
+        return render_template("error.html", error="Log in to see campaigns")
+    search = request.args.get("search_term", None)
+    gm_checked = False
+    if not search:
+        message = None
         campaign_list = campaigns.get_all()
-        return render_template("listing.html", campaigns=campaign_list)
-    return render_template("error.html", error="Log in to see campaigns")
+    else:
+        search_type = request.args["search_by"]
+        if search_type == "title":
+            message = "Showing campaigns with \"" + search + "\" in title"
+            campaign_list = campaigns.search_by_title(search)
+        else:
+            gm_checked = True
+            message = "Showing campaigns with \"" + search + "\" in GM name"
+            gm_id_list = users.search_gm_ids(search)
+            campaign_list = campaigns.get_by_gm_ids(gm_id_list)
+    return render_template(
+        "listing.html",
+        campaigns=campaign_list,
+        message=message,
+        gm_checked=gm_checked,
+        )
 
 @app.route("/campaign/<int:id>/join", methods=["GET", "POST"])
 def join_campaign(id):

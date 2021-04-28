@@ -1,5 +1,32 @@
 <a href="/">Main page</a>
+<form action="/campaigns", method="GET">
+    <label>
+        Search:
+        <input type="text" name="search_term">
+    </label>
+    <input type="submit" value="Go">
+    <br>
+    <label>
+        By title:
+        {% if gm_checked %}
+        <input type="radio" name="search_by" value="title">
+        {% else %}
+        <input type="radio" name="search_by" value="title" checked>
+        {% endif %}
+    </label>
+    <label>
+        By GM:
+        {% if gm_checked %}
+        <input type="radio" name="search_by" value="gm" checked>
+        {% else %}
+        <input type="radio" name="search_by" value="gm">
+        {% endif %}
+    </label>
+</form>
 <h1>Campaigns</h1>
+{% if message %}
+<p>{{ message }}</p>
+{% endif %}
 <ul>
     {% for campaign in campaigns %}
     <li>

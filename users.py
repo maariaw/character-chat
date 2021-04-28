@@ -100,3 +100,11 @@ def get_username(user_id):
 def check_csrf(csrf_token):
     if session["csrf_token"] != csrf_token:
         abort(403)
+
+def search_gm_ids(gm_username):
+    sql = """SELECT id FROM users
+             WHERE lower(name) LIKE lower(:gm_username)
+             AND role=2 AND visible=1"""
+    result = db.session.execute(sql, {"gm_username":"%"+gm_username+"%"})
+    gm_id_list = [item[0] for item in result.fetchall()]
+    return gm_id_list
