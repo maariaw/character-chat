@@ -24,9 +24,9 @@ App is still bare bones. Elements are in place, but no effort has been put towar
 * A GM can start a chat in their campaign, give it a title and choose participating players (cannot see chat yet)
 * A GM can send messages in any chat in their campaign
 * A player can send messages in a chat they're a participant in
+* Users can search for campaigns by name or creator
 
 ### Planned
-* Users can search for campaigns by name or creator
 * A GM can close a chat in their campaign
 * Users can access a list of chats they are participating in, showing the last message and its time stamp
 
