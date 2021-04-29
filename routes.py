@@ -137,9 +137,12 @@ def campaign_page(id):
     if request.method == "POST":
         users.check_csrf(request.form["csrf_token"])
         text = request.form["text"]
+        chat_id = request.form["chat_id"]
         if 0 < len(text) <= 1000:
-            chat_id = request.form["chat_id"]
             chats.add_message(chat_id, text)
+        close = request.form.get("close", 0)
+        if close:
+            chats.close(chat_id)
         return redirect("/campaign/" + str(id))
 
 @app.route("/campaign/<int:id>/delete", methods=["GET", "POST"])
@@ -258,7 +261,8 @@ def create_chat(id):
             return render_template("newchat.html", error="Title cannot be empty")
         if len(title) > 300:
             return render_template("newchat.html", error="Title is too long")
-        chat_id = chats.create_chat(id, title)
+        private = request.form.get("private", 0)
+        chat_id = chats.create_chat(id, title, private)
         chats.add_chatter(chat_id, user_id)
         chatters = request.form.getlist("chatter")
         for chatter in chatters:

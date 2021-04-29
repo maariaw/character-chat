@@ -3,11 +3,16 @@ from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
 import users
 
-def create_chat(campaign_id, title):
-    sql = """INSERT INTO chats (title, campaign_id, created_at, visible)
-              VALUES (:title, :campaign_id, NOW(), 1) RETURNING id"""
+def create_chat(campaign_id, title, private):
+    sql = """INSERT INTO chats (
+             title, campaign_id, created_at, privated, closed, visible)
+             VALUES (
+             :title, :campaign_id, NOW(), :private, 0, 1)
+             RETURNING id"""
     chat_id = db.session.execute(
-        sql, {"title":title, "campaign_id":campaign_id}).fetchone()[0]
+        sql,
+        {"title":title, "campaign_id":campaign_id, "private":private}
+        ).fetchone()[0]
     db.session.commit()
     return chat_id
 
@@ -26,7 +31,8 @@ def get_chatters(chat_id):
 
 def get_campaign_chats(campaign_id):
     chat_list = []
-    sql = "SELECT id FROM chats WHERE campaign_id=:campaign_id AND visible=1"
+    sql = """SELECT id FROM chats
+             WHERE campaign_id=:campaign_id AND visible=1"""
     result = db.session.execute(sql, {"campaign_id":campaign_id}).fetchall()
     for row in result:
         chat_list.append(get_chat(row[0]))
@@ -34,11 +40,14 @@ def get_campaign_chats(campaign_id):
 
 def get_chat(chat_id):
     chat = {}
-    sql = "SELECT title, created_at FROM chats WHERE id=:chat_id"
+    sql = """SELECT title, created_at, privated, closed FROM chats
+             WHERE id=:chat_id"""
     result = db.session.execute(sql, {"chat_id":chat_id}).fetchone()
     chat["id"] = chat_id
     chat["title"] = result[0]
     chat["time"] = result[1]
+    chat["private"] = result[2]
+    chat["closed"] = result[3]
     participants = get_chatters(chat_id)
     chatters = [users.get_username(chatter_id) for chatter_id in participants]
     chat["chatters"] = chatters
@@ -66,4 +75,9 @@ def add_message(chat_id, text):
              VALUES (:text, :user_id, :chat_id, NOW(), 1)"""
     db.session.execute(
         sql, {"text":text, "user_id":user_id, "chat_id":chat_id})
+    db.session.commit()
+
+def close(chat_id):
+    sql = "UPDATE chats SET closed=1 WHERE id=:chat_id"
+    db.session.execute(sql, {"chat_id":chat_id})
     db.session.commit()

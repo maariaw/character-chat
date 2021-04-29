@@ -21,6 +21,8 @@ CREATE TABLE chats (
   title TEXT,
   campaign_id INTEGER REFERENCES campaigns,
   created_at TIMESTAMP,
+  privated INTEGER,
+  closed INTEGER,
   visible INTEGER
 );
 

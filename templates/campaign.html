@@ -9,6 +9,7 @@
 </ul>
 <p>Created at: {{ campaign.creation_time.strftime("%x") }}</p>
 {% for chat in chatlist %}
+{% if chat["private"] == 0 or session.get("username") in chat["chatters"] %}
 <div>
     <h2>{{ chat["title"] }}</h2>
     <p>{{ chat["time"].strftime("%x") }}</p>
@@ -25,8 +26,15 @@
             {{ message["text"] }}
         </p>
         {% endfor %}
-        {% if session.get("username") in chat["chatters"] %}
+        {% if chat["closed"] == 0 and session.get("username") in chat["chatters"] %}
         <form action="/campaign/{{ id }}" method="POST">
+            {% if session.get("username") == campaign.gm %}
+            <label>
+                Close this chat
+                <input type="checkbox" name="close" value=1>
+            </label>
+            <br>
+            {% endif %}
             <label>
                 New message:
                 <input type="text" name="text" maxlength="1000">
@@ -35,9 +43,12 @@
             <input type="hidden" name="chat_id" value="{{ chat["id"] }}">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
+        {% elif chat["closed"] == 1 %}
+        <p>This chat has been closed by the GM</p>
         {% endif %}
     </div>
 </div>
+{% endif %}
 {% endfor %}
 {% if session.username == campaign.gm %}
 <a href="/campaign/{{ id }}/create-chat">Start a new chat</a>

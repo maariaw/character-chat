@@ -26,6 +26,14 @@
         </label>
         {% endfor %}
     </p>
+    <p>
+        <label>
+            Private
+            <input type="checkbox" name="private" value=1>
+        </label>
+        <br>
+        Making the chat private means only participants can see it.
+    </p>
     <input type="submit" value="Create">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
