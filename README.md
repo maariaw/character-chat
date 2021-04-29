@@ -9,7 +9,6 @@ Sometimes role playing campaigns are packed full of action, but leave little tim
 App is still bare bones. Elements are in place, but no effort has been put towards looks and user friendliness yet, sorry about that! 
 
 ## Features:
-### Completed
 * A user can create an account as either a player or a GM
 * A user can log in and out
 * A user can deactivate and reactivate their account
@@ -27,8 +26,6 @@ App is still bare bones. Elements are in place, but no effort has been put towar
 * A GM can close a chat in their campaign
 * A player can send messages in a chat they're a participant in
 * Users can search for campaigns by name or creator
-
-### Planned
-* Users can access a list of chats they are participating in, showing the last message and its time stamp
+* Users can access all their active chats on one page
 
 This app is being built as an assignment for Databases Lab course.
