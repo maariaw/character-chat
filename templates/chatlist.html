@@ -1,0 +1,29 @@
+<a href="/">Main page</a>
+<h1>Active chats</h1>
+{% for campaign in campaign_list %}
+<h2>{{ campaign["info"].title }}</h2>
+<a href="/campaign/{{ campaign["info"].id }}">Go to campaign</a>
+{% for chat in campaign["chats"] %}
+<div>
+    <h3>{{ chat["title"] }}</h3>
+    <div>
+        {% for message in chat["messages"] %}
+        <p>
+            {{ message["time"].strftime("%x") }} {{ message["username"] }} :
+            {{ message["text"] }}
+        </p>
+        {% endfor %}
+        <form action="/campaign/{{ campaign["info"].id }}" method="POST">
+            <label>
+                New message:
+                <input type="text" name="text" maxlength="1000">
+            </label>
+            <input type="submit" value="Send">
+            <input type="hidden" name="chat_id" value="{{ chat["id"] }}">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="hidden" name="route" value="/chats">
+        </form>
+    </div>
+</div>
+{% endfor %}
+{% endfor %}
