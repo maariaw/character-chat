@@ -21,13 +21,14 @@ App is still bare bones. Elements are in place, but no effort has been put towar
 * Users can see other users in a campaign they are in
 * Users can access a list of campaigns they are in
 * A player can leave a campaign
-* A GM can start a chat in their campaign, give it a title and choose participating players (cannot see chat yet)
+* A GM can start a chat in their campaign, give it a title and choose participating players
+* The chat can be created so that all players in the campaign see it, or private so that only participating players can see it
 * A GM can send messages in any chat in their campaign
+* A GM can close a chat in their campaign
 * A player can send messages in a chat they're a participant in
 * Users can search for campaigns by name or creator
 
 ### Planned
-* A GM can close a chat in their campaign
 * Users can access a list of chats they are participating in, showing the last message and its time stamp
 
 This app is being built as an assignment for Databases Lab course.
