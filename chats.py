@@ -1,7 +1,7 @@
 from db import db
 from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
-import users
+import users, campaigns
 
 def create_chat(campaign_id, title, private):
     sql = """INSERT INTO chats (
@@ -40,7 +40,7 @@ def get_campaign_chats(campaign_id):
 
 def get_chat(chat_id):
     chat = {}
-    sql = """SELECT title, created_at, privated, closed FROM chats
+    sql = """SELECT title, created_at, privated, closed, campaign_id FROM chats
              WHERE id=:chat_id"""
     result = db.session.execute(sql, {"chat_id":chat_id}).fetchone()
     chat["id"] = chat_id
@@ -48,6 +48,7 @@ def get_chat(chat_id):
     chat["time"] = result[1]
     chat["private"] = result[2]
     chat["closed"] = result[3]
+    chat["campaign_id"] = result[4]
     participants = get_chatters(chat_id)
     chatters = [users.get_username(chatter_id) for chatter_id in participants]
     chat["chatters"] = chatters

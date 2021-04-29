@@ -141,13 +141,11 @@ def search_by_title(title):
              WHERE visible=1 AND lower(title) LIKE lower(:title)
              ORDER BY created_at"""
     result = db.session.execute(sql, {"title":"%"+title+"%"}).fetchall()
-    print(result)
     campaign_list = []
     for item in result:
         id = item[0]
         campaign = get_campaign_info(id)
         campaign_list.append(campaign)
-    print(campaign_list)
     return  campaign_list
 
 def get_by_gm_ids(gm_id_list):

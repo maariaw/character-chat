@@ -44,7 +44,10 @@
             </label>
             <input type="submit" value="Send">
             <input type="hidden" name="chat_id" value="{{ chat["id"] }}">
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="hidden" name="csrf_token"
+                value="{{ session.csrf_token }}">
+            <input type="hidden" name="route"
+                value="/campaign/{{ id }}">
         </form>
         {% elif chat["closed"] == 1 %}
         <p>This chat has been closed by the GM</p>

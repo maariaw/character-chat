@@ -143,7 +143,7 @@ def campaign_page(id):
         close = request.form.get("close", 0)
         if close:
             chats.close(chat_id)
-        return redirect("/campaign/" + str(id))
+        return redirect(request.form["route"])
 
 @app.route("/campaign/<int:id>/delete", methods=["GET", "POST"])
 def delete_campaign(id):
@@ -270,3 +270,25 @@ def create_chat(id):
             if chatter_id:
                 chats.add_chatter(chat_id, chatter_id)
         return redirect("/campaign/" + str(id))
+
+@app.route("/chats", methods=["GET", "POST"])
+def active_chats():
+    user_id = session.get("user_id")
+    if not user_id:
+        return render_template(
+            "error.html", error="You need to be logged in to chat")
+    if request.method == "GET":
+        campaign_list = []
+        user_campaigns = campaigns.get_joined_campaigns(user_id)
+        campaign_ids = [campaign.id for campaign in user_campaigns]
+        for campaign_info in user_campaigns:
+            campaign = {}
+            campaign["info"] = campaign_info
+            all_chats = chats.get_campaign_chats(campaign_info.id)
+            campaign["chats"] = [
+                chat for chat in all_chats
+                if chat["closed"] == 0
+                and session["username"] in chat["chatters"]
+                ]
+            campaign_list.append(campaign)
+        return render_template("chatlist.html", campaign_list=campaign_list)
