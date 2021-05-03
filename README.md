@@ -28,4 +28,8 @@ App is still bare bones. Elements are in place, but no effort has been put towar
 * Users can search for campaigns by name or creator
 * Users can access all their active chats on one page
 
+### Future features
+* A player can remove themselves from a chat
+* GM can delete messages
+
 This app is being built as an assignment for Databases Lab course.
