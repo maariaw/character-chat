@@ -82,3 +82,8 @@ def close(chat_id):
     sql = "UPDATE chats SET closed=1 WHERE id=:chat_id"
     db.session.execute(sql, {"chat_id":chat_id})
     db.session.commit()
+
+def remove_from_all_chats(user_id):
+    sql = "DELETE FROM chat_users WHERE user_id=:user_id"
+    db.session.execute(sql, {"user_id":user_id})
+    db.session.commit()

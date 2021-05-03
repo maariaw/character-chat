@@ -94,7 +94,7 @@ def change_account_status():
         username = session.get("username")
         if username:
             password = request.form["deact-password"]
-            if users.deactivate_account(username, password):
+            if users.deactivate_account(password):
                 return render_template(
                     "/account.html", message="Account deactivated.")
             else:

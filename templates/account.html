@@ -5,12 +5,22 @@
 <h1>Account status</h1>
 {% if session.username %}
 <p>Logged in as {{ session.username }}</p>
+{% if session.role == 1 %}
 <p>
     Deactivate your account by entering your password below and 
     clicking "Deactivate". You will be removed from any chats and 
     campaigns you were participating in. Reactivation will not bring 
     them back.
 </p>
+{% elif session.role == 2 %}
+<p>
+    Deactivate your account by entering your password below and
+    clicking "Deactivate". All your created campaigns will be deleted.
+    The chats in deleted campaigns can no longer be accessed.
+    Reactivation will not bring back your campaigns and you can't
+    create campaigns with identical names.
+</p>
+{% endif %}
 <form action="/account-status" method="POST">
     <p>
         <label>

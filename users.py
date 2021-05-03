@@ -1,7 +1,7 @@
 from db import db
 from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
-import os
+import os, chats, campaigns
 
 def log_out():
     del session["username"]
@@ -48,13 +48,20 @@ def user_exists(username):
     result = db.session.execute(sql, {"username":username})
     return result.fetchone() != None
 
-def deactivate_account(username, password):
+def deactivate_account(password):
+    username = session["username"]
     if check_password(username, password) and account_active(username):
+        user_id = session["user_id"]
+        role = session["role"]
+        if role == 1:
+            chats.remove_from_all_chats(user_id)
+            campaigns.remove_from_all_campaigns(user_id)
+        else:
+            campaigns.deactivate_created_campaigns(user_id)
         sql = "UPDATE users SET visible=0 WHERE name=:username"
         db.session.execute(sql, {"username":username})
         db.session.commit()
         log_out()
-        return True
     else:
         return False
 

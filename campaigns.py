@@ -58,6 +58,11 @@ def is_duplicate(title, user_id):
     titles = [item[0] for item in result]
     return title in titles
 
+def deactivate_created_campaigns(user_id):
+    campaign_list = get_created_campaigns(user_id)
+    for campaign in campaign_list:
+        deactivate_campaign(campaign.id)
+
 def deactivate_campaign(campaign_id):
     user_id = session.get("user_id")
     sql = "SELECT creator_id, visible FROM campaigns WHERE id=:campaign_id"
@@ -116,7 +121,8 @@ def add_player(campaign_id, user_id):
 
 def get_joined_campaigns(user_id):
     sql = """SELECT c.id FROM campaigns c, campaign_users u
-            WHERE c.visible=1 AND c.id=u.campaign_id AND u.user_id=:user_id
+            WHERE c.visible=1 AND u.visible=1
+            AND c.id=u.campaign_id AND u.user_id=:user_id
             ORDER BY created_at"""
     result = db.session.execute(sql, {"user_id":user_id}).fetchall()
     campaign_list = []
@@ -159,3 +165,8 @@ def get_by_gm_ids(gm_id_list):
         campaign = get_campaign_info(id)
         campaign_list.append(campaign)
     return  campaign_list
+
+def remove_from_all_campaigns(user_id):
+    sql = "DELETE FROM campaign_users WHERE user_id=:user_id"
+    db.session.execute(sql, {"user_id":user_id})
+    db.session.commit()
