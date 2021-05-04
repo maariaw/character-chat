@@ -27,9 +27,9 @@ App is still bare bones. Elements are in place, but no effort has been put towar
 * A player can send messages in a chat they're a participant in
 * Users can search for campaigns by name or creator
 * Users can access all their active chats on one page
+* A player can remove themselves from a chat
 
 ### Future features
-* A player can remove themselves from a chat
 * GM can delete messages
 
 This app is being built as an assignment for Databases Lab course.
