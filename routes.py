@@ -292,3 +292,20 @@ def active_chats():
                 ]
             campaign_list.append(campaign)
         return render_template("chatlist.html", campaign_list=campaign_list)
+
+@app.route("/chats/leave/<int:id>", methods=["GET", "POST"])
+def leave_chat(id):
+    user_id = session.get("user_id")
+    if not user_id or not chats.user_in_chat(id, user_id):
+        return render_template(
+            "error.html", error="You don't have access to this chat")
+    chat = chats.get_chat(id)
+    campaign = campaigns.get_campaign_title(chat["campaign_id"])
+    if request.method == "GET":
+        return render_template("chat.html", chat=chat, campaign=campaign)
+    if request.method == "POST":
+        users.check_csrf(request.form["csrf_token"])
+        leave = request.form.get("leave", 0)
+        if leave:
+            chats.remove_user_from_chat(user_id, id)
+        return redirect("/chats")

@@ -1,0 +1,35 @@
+<a href="/">Main page</a>
+<div>
+    <h1>{{ campaign }}</h1>
+    <h2>{{ chat["title"] }}</h2>
+    <p>{{ chat["time"].strftime("%x") }}</p>
+    <p>Chat participants:</p>
+    <ul>
+        {% for chatter in chat["chatters"] %}
+        <li>{{ chatter }}</li>
+        {% endfor %}
+    </ul>
+    {% if chat["private"] == 1 %}
+    <p>This chat is private, only participating players can see it</p>
+    {% endif %}
+    <div>
+        {% for message in chat["messages"] %}
+        <p>
+            {{ message["time"].strftime("%x") }} {{ message["username"] }} :
+            {{ message["text"] }}
+        </p>
+        {% endfor %}
+    </div>
+    <form action="/chats/leave/{{ chat["id"] }}" method="POST">
+        <label>
+            Leave chat
+            <input type="checkbox" name="leave" value=1>
+        </label>
+        <br>
+        This action cannot be reversed!
+        <br>
+        <input type="submit" value="Confirm leave">
+        <input type="hidden" name="csrf_token"
+            value="{{ session.csrf_token }}">
+    </form>
+</div>

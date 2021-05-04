@@ -83,7 +83,21 @@ def close(chat_id):
     db.session.execute(sql, {"chat_id":chat_id})
     db.session.commit()
 
+def remove_user_from_chat(user_id, chat_id):
+    sql = "DELETE FROM chat_users WHERE user_id=:user_id AND chat_id=:chat_id"
+    db.session.execute(sql, {"user_id":user_id, "chat_id":chat_id})
+    db.session.commit()
+
 def remove_from_all_chats(user_id):
     sql = "DELETE FROM chat_users WHERE user_id=:user_id"
     db.session.execute(sql, {"user_id":user_id})
     db.session.commit()
+
+def user_in_chat(chat_id, user_id):
+    sql = """SELECT 1 FROM chat_users
+             WHERE chat_id=:chat_id AND user_id=:user_id"""
+    result = db.session.execute(sql, {"user_id":user_id, "chat_id":chat_id})
+    if result.fetchone():
+        return True
+    else:
+        return False
