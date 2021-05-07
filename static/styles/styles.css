@@ -49,6 +49,7 @@ ul {
 }
 
 .navigation {
+    margin-top: -3px;
     overflow: hidden;
 }
 
@@ -242,12 +243,4 @@ ul:before {
 .join {
     margin: 0.3em;
     width: 10%;
-}
-
-.logo {
-    width: 50%;
-    height: auto;
-    margin-bottom: -0.5em;
-    position: relative;
-    z-index: -1;
 }
