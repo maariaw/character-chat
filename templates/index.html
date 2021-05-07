@@ -1,85 +1,155 @@
-<p><b>
-    !THIS APP IS IN DEVELOPMENT, DO NOT GIVE SENSITIVE INFORMATION!
-    <br>
-    ACCOUNTS WILL BE WIPED OFTEN DURING DEVELOPMENT
-</b></p>
-{% if message %}
-<p>{{ message }}</p>
-{% endif %}
-{% if error %}
-<p>Action not successful: {{ error }}</p>
-{% endif %}
-{% if session.username %}
-<p>Logged in as {{ session.username }} by role {{ session.role }}</p>
-{% if (session.role == 2) %}
-<p>This is a GM account</p>
-<a href="/create-campaign">Start a new campaign</a>
-{% else %}
-<p>This is a player account</p>
-<a href="/chats">Your active chats</a>
-{% endif %}
-<h3>Your campaigns:</h3>
-<ul>
-    {% for campaign in campaigns %}
-    <li><a href="/campaign/{{ campaign.id }}">{{ campaign.title }}</a></li>
-    {% endfor %}
-</ul>
-<a href="/logout">Log out</a>
-<a href="/campaigns">See all campaigns</a>
-{% else %}
-<form action="/login" method="POST">
-    <h3>Login</h3>
-    <p>
-        <label>
-            Username:
-            <br>
-            <input type="text" name="username">
-        </label>
-    </p>
-    <p>
-        <label>
-            Password:
-            <br>
-            <input type="password" name="password">
-        </label>
-    </p>
-    <input type="submit" value="Log in">
-</form>
-<form action="/register" method="POST">
-    <h3>Register</h3>
-    <p>
-        <label>
-            Player account
-            <input type="radio" name="account" value="1" checked>
-        </label>
-        <label>
-            GM account
-            <input type="radio" name="account" value="2">
-        </label>
-    </p>
-    <p>
-        <label>
-            Username (max 20 characters):
-            <br>
-            <input type="text" name="username">
-        </label>
-    </p>
-    <p>
-        <label>
-            Password (8-32 characters):
-            <br>
-            <input type="password" name="password1">
-        </label>
-    </p>
-    <p>
-        <label>
-            Retype password:
-            <br>
-            <input type="password" name="password2">
-        </label>
-    </p>
-    <input type="submit" value="Register">
-</form>
-{% endif %}
-<br>
-<a href="/account-status">Activate or deactivate an existing account</a>
+<!DOCTYPE html>
+
+<head>
+    <title>Ch-Ch - Character Chatter</title>
+    <link rel="stylesheet" type="text/css"
+        href="{{ url_for('static',filename='styles/styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maaria Wahlström">
+    <meta name="description" content="Character Chatter is an app for playing
+        out social interactions between characters of a roleplaying campaign.">
+</head>
+
+<body>
+    {% if session.username %}
+    <nav class="navigation">
+        <a id="active" href="/">Main page</a>
+        <a href="/campaigns">All campaigns</a>
+        <a href="/chats">My chats</a>
+        <div class="dropdown">
+            <button type="button" class="dropbutton">My campaigns</button>
+            <div class="dropcontent">
+                {% for campaign in campaigns %}
+                <a href="/campaign/{{ campaign.id }}">
+                    {{ campaign.title }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="dropdown">
+            <button type="button" class="dropbutton">Account</button>
+            <div class="dropcontent">
+                <p>Logged in as: {{ session.username }}</p>
+                <a href="/logout">Log out</a>
+                <a href="/account-status">
+                    Deactivate account
+                </a>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+    <div class="content">
+        <p><b>
+        !THIS APP IS IN DEVELOPMENT, DO NOT GIVE SENSITIVE INFORMATION!
+        <br>
+        ACCOUNTS WILL BE WIPED OFTEN DURING DEVELOPMENT
+        </b></p>
+        {% if message %}
+        <p class="success">{{ message }}</p>
+        {% endif %}
+        {% if session.username %}
+        {% if (session.role == 2) %}
+        <h1>Welcome back to Character Chatter, GM {{ session.username }}!</h1>
+        <a class="big actionbtn" href="/create-campaign">Start a new campaign</a>
+        {% else %}
+        <h1>Welcome back to Character Chatter, {{ session.username }}!</h1>
+        {% endif %}
+        {% if campaigns == [] %}
+        <a class="big actionbtn" href="/campaigns">Find a campaign</a>
+        {% else %}
+        <h2>Your campaigns:</h2>
+        {% endif %}
+        <ul class="campaign-list">
+            {% for campaign in campaigns %}
+            <li>
+                <a class="campaign-link" href="/campaign/{{ campaign.id }}">
+                    <h3 class="big actionbtn campaign-title">{{ campaign.title }}</h3>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <form action="/login" method="POST">
+            <h3>Login</h3>
+            <p>
+                <label>
+                    Username:
+                    <br>
+                    <input type="text" name="username">
+                    {% if error == "Username not registered"
+                        or error == "Account has been deactivated" %}
+                    <br>
+                    <span class="error">{{ error }}</span>
+                    {% endif %}
+                </label>
+            </p>
+            <p>
+                <label>
+                    Password:
+                    <br>
+                    <input type="password" name="password">
+                </label>
+                {% if error == "Incorrect password" %}
+                <br>
+                <span class="error">{{ error }}</span>
+                {% endif %}
+            </p>
+            <input class="small actionbtn" type="submit" value="Log in">
+        </form>
+        <form action="/register" method="POST">
+            <h3>Register</h3>
+            {% if error == "Could not register account"
+                or error == "Account type not recognized" %}
+            <p class="error">{{ error }}</p>
+            {% endif %}
+            <p>
+                <label>
+                    Player account
+                    <input type="radio" name="account" value="1" checked>
+                </label>
+                <label>
+                    GM account
+                    <input type="radio" name="account" value="2">
+                </label>
+            </p>
+            <p>
+                <label>
+                    Username (max 20 characters):
+                    <br>
+                    <input type="text" name="username" maxlength="20">
+                </label>
+                {% if error == "Username has to be 1-20 characters long"
+                    or error == "Username is already in use" %}
+                <br>
+                <span class="error">{{ error }}</span>
+                {% endif %}
+            </p>
+            <p>
+                <label>
+                    Password (8-32 characters):
+                    <br>
+                    <input type="password" name="password1" maxlength="32">
+                </label>
+                {% if error == "Password has to be 8-32 characters long"
+                    or error == "Password was retyped incorrectly" %}
+                <br>
+                <span class="error">{{ error }}</span>
+                {% endif %}
+            </p>
+            <p>
+                <label>
+                    Retype password:
+                    <br>
+                    <input type="password" name="password2">
+                </label>
+            </p>
+            <input class="small actionbtn" type="submit" value="Register">
+        </form>
+        <br>
+        <a class="small actionbtn" href="/account-status">
+            Reactivate an existing account
+        </a>
+        {% endif %}
+    </div>
+</body>

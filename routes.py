@@ -6,15 +6,7 @@ import users, campaigns, chats
 
 @app.route("/")
 def index():
-    role = session.get("role", 0)
-    if role == 2:
-        campaign_list = campaigns.get_created_campaigns(
-            session.get("user_id", 0))
-    elif role == 1:
-        campaign_list = campaigns.get_joined_campaigns(
-            session.get("user_id", 0))
-    else:
-        campaign_list = []
+    campaign_list = campaigns.get_campaigns()
     return render_template("index.html", campaigns=campaign_list)
 
 @app.route("/login", methods=["POST"])
@@ -61,68 +53,103 @@ def register():
 
 @app.route("/create-campaign", methods=[ "GET", "POST"])
 def create_campaign():
+    if session.get("role", 0) != 2:
+        return render_template(
+            "error.html", error="Log in as GM to create a campaign")
+    campaign_list = campaigns.get_campaigns()
     if request.method == "GET":
-        return render_template("newcampaign.html")
+        return render_template("newcampaign.html", campaigns=campaign_list)
     if request.method == "POST":
         users.check_csrf(request.form["csrf_token"])
         title = request.form["title"]
         password = request.form["password"]
-        if len(title) < 0:
-            return render_template("newcampaign.html", error="Title cannot be empty")
+        if len(title) < 1:
+            return render_template(
+                "newcampaign.html",
+                error="Title cannot be empty",
+                campaigns=campaign_list
+                )
         if len(title) > 100:
-            return render_template("newcampaign.html", error="Title is too long")
+            return render_template(
+                "newcampaign.html",
+                error="Title is too long",
+                campaigns=campaign_list
+                )
         if campaigns.is_duplicate(title, session.get("user_id", 0)):
             return render_template(
                 "newcampaign.html",
-                error="You cannot create two campaigns with the same title"
+                error="You cannot create two campaigns with the same title",
+                campaigns=campaign_list
                 )
         if len(password) < 8:
             return render_template(
-                "newcampaign.html", error="Password is too short")
+                "newcampaign.html",
+                error="Password is too short",
+                campaigns=campaign_list
+                )
         if len(password) > 32:
             return render_template(
-                "newcampaign.html", error="Password is too long")
-        campaigns.create_campaign(title, password)
-        return redirect("/")
+                "newcampaign.html",
+                error="Password is too long",
+                campaigns=campaign_list
+                )
+        id = campaigns.create_campaign(title, password)
+        url = "/campaign/" + str(id)
+        return redirect(url)
 
 @app.route("/account-status", methods=["POST", "GET"])
 def change_account_status():
+    campaign_list = campaigns.get_campaigns()
     if request.method == "GET":
-        return render_template("account.html")
-
+        return render_template("account.html", campaigns=campaign_list)
     if request.method == "POST":
         username = session.get("username")
         if username:
             password = request.form["deact-password"]
             if users.deactivate_account(password):
                 return render_template(
-                    "/account.html", message="Account deactivated.")
+                    "/index.html",
+                    message="Account deactivated.",
+                    campaigns=campaign_list
+                    )
             else:
                 return render_template(
                     "/account.html",
-                    message="Account could not be deactivated."
+                    error="Account could not be deactivated.",
+                    campaigns=campaign_list
                     )
         else:
             username = request.form["username"]
             password = request.form["react-password"]
             if users.reactivate_account(username, password):
                 return render_template(
-                    "/account.html", message="Account activated.")
+                    "/index.html",
+                    message="Account activated.",
+                    campaigns=campaign_list
+                    )
             else:
                 return render_template(
                     "/account.html",
-                    message="Account could not be activated."
+                    error="Account could not be activated.",
+                    campaigns=campaign_list
                     )
 
 @app.route("/campaign/<int:id>", methods=["GET", "POST"])
 def campaign_page(id):
+    campaign_list = campaigns.get_campaigns()
     user_id = session.get("user_id", 0)
     if not campaigns.has_access(id, user_id):
         return render_template(
-            "error.html", error="You don't have access to this campaign")
+            "error.html",
+            error="You don't have access to this campaign",
+            campaigns=campaign_list
+            )
     if not campaigns.is_active(id):
         return render_template(
-            "error.html", error="Campaign could not be loaded")
+            "error.html",
+            error="Campaign could not be loaded",
+            campaigns=campaign_list
+            )
     if request.method == "GET":
         campaign = campaigns.get_campaign_info(id)
         players = campaigns.get_campaign_players(id)
@@ -133,6 +160,7 @@ def campaign_page(id):
             players=players,
             id=id,
             chatlist=chatlist,
+            campaigns=campaign_list
             )
     if request.method == "POST":
         users.check_csrf(request.form["csrf_token"])
@@ -148,17 +176,19 @@ def campaign_page(id):
 @app.route("/campaign/<int:id>/delete", methods=["GET", "POST"])
 def delete_campaign(id):
     user_id = session.get("user_id", 0)
+    campaign_list = campaigns.get_campaigns()
     if not campaigns.is_creator(id, user_id):
         return render_template(
-            "error.html", error="No authority")
+            "error.html", error="No authority", campaigns=campaign_list)
+    campaign = campaigns.get_campaign_info(id)
+    players = campaigns.get_campaign_players(id)
     if request.method == "GET":
-        campaign = campaigns.get_campaign_info(id)
-        players = campaigns.get_campaign_players(id)
         return render_template(
             "delete.html",
             campaign=campaign,
             players=players,
             id=id,
+            campaigns=campaign_list
             )
     if request.method == "POST":
         users.check_csrf(request.form["csrf_token"])
@@ -168,67 +198,105 @@ def delete_campaign(id):
                 return redirect("/")
             else:
                 return render_template(
-                    "error.html", error="Campaign could not be deleted")
+                    "error.html",
+                    error="Campaign could not be deleted",
+                    campaigns=campaign_list
+                    )
         return render_template(
-                "error.html", error="Campaign password was incorrect")
+                "delete.html",
+                error="Campaign password was incorrect",
+                campaign=campaign,
+                players=players,
+                id=id,
+                campaigns=campaign_list
+                )
 
 @app.route("/campaigns", methods=["GET"])
 def list_campaigns():
+    campaign_list = campaigns.get_campaigns()
     user_role = session.get("role", 0)
     if user_role == 0:
-        return render_template("error.html", error="Log in to see campaigns")
+        return redirect("/")
     search = request.args.get("search_term", None)
     gm_checked = False
     if not search:
         message = None
-        campaign_list = campaigns.get_all()
+        show_campaigns = campaigns.get_all()
     else:
         search_type = request.args["search_by"]
         if search_type == "title":
             message = "Showing campaigns with \"" + search + "\" in title"
-            campaign_list = campaigns.search_by_title(search)
+            show_campaigns = campaigns.search_by_title(search)
         else:
             gm_checked = True
             message = "Showing campaigns with \"" + search + "\" in GM name"
             gm_id_list = users.search_gm_ids(search)
-            campaign_list = campaigns.get_by_gm_ids(gm_id_list)
+            show_campaigns = campaigns.get_by_gm_ids(gm_id_list)
     return render_template(
         "listing.html",
-        campaigns=campaign_list,
+        show_campaigns=show_campaigns,
         message=message,
         gm_checked=gm_checked,
+        campaigns=campaign_list
         )
 
 @app.route("/campaign/<int:id>/join", methods=["GET", "POST"])
 def join_campaign(id):
+    campaign_list = campaigns.get_campaigns()
     user_id = session.get("user_id", 0)
     user_role = session.get("role", 0)
     if user_role != 1:
             return render_template(
                 "error.html",
-                error="You need to be logged in as player to join a campaign")
+                error="You need to be logged in as player to join a campaign",
+                campaigns=campaign_list
+                )
     url = "/campaign/" + str(id)
+    this_campaign = campaigns.get_campaign_info(id)
     if request.method == "GET":
         if campaigns.has_access(id, user_id):
             return redirect(url)
-        this_campaign = campaigns.get_campaign_info(id)
-        return render_template("join.html", campaign=this_campaign)
+        if this_campaign:
+            return render_template(
+                "join.html", campaign=this_campaign, campaigns=campaign_list)
+        else:
+            return render_template(
+                "error.html",
+                error="Could not find the campaign you were looking for",
+                campaigns=campaign_list
+                )
     if request.method == "POST":
         users.check_csrf(request.form["csrf_token"])
         password = request.form["password"]
-        if campaigns.check_password(id, password):
+        if password and campaigns.check_password(id, password):
             campaigns.add_player(id, user_id)
             return redirect(url)
+        else:
+            return render_template(
+                "join.html",
+                error="Incorrect password",
+                campaign=this_campaign,
+                campaigns=campaign_list
+                )
 
 @app.route("/campaign/<int:id>/leave", methods=["GET", "POST"])
 def leave_campaign(id):
+    campaign_list = campaigns.get_campaigns()
     user_id = session.get("user_id", 0)
     if not campaigns.has_access(id, user_id):
         return render_template(
-            "error.html", error="You don't have access to this campaign")
+            "error.html",
+            error="You don't have access to this campaign",
+            campaigns=campaign_list
+            )
+    this_campaign = campaigns.get_campaign_info(id)
+    players = campaigns.get_campaign_players(id)
     if request.method == "GET":
-        this_campaign = campaigns.get_campaign_info(id)
-        return render_template("leave.html", campaign=this_campaign)
+        return render_template(
+            "leave.html",
+            campaign=this_campaign,
+            players=players,
+            campaigns=campaign_list)
     if request.method == "POST":
         username = session.get("username")
         password = request.form["password"]
@@ -238,29 +306,52 @@ def leave_campaign(id):
             else:
                 return render_template(
                     "error.html",
-                    error="Could not remove player from campaign")
+                    error="Could not remove player from campaign",
+                    campaigns=campaign_list
+                    )
         else:
             return render_template(
-                    "error.html", error="Password was incorrect")
+                    "leave.html",
+                    campaign=this_campaign,
+                    players=players,
+                    error="Password was incorrect",
+                    campaigns=campaign_list)
 
 @app.route("/campaign/<int:id>/create-chat", methods=["GET", "POST"])
 def create_chat(id):
+    campaign_list = campaigns.get_campaigns()
     user_id = session.get("user_id", 0)
     if not campaigns.is_creator(id, user_id):
         return render_template(
-            "error.html", error="No authority")
+            "error.html", error="No authority", campaigns=campaign_list)
+    campaign = campaigns.get_campaign_info(id)
+    players = campaigns.get_campaign_players(id)
     if request.method == "GET":
-        campaign = campaigns.get_campaign_title(id)
-        players = campaigns.get_campaign_players(id)
         return render_template(
-            "newchat.html", campaign=campaign, players=players, id=id)
+            "newchat.html",
+            campaign=campaign,
+            players=players,
+            id=id,
+            campaigns=campaign_list
+            )
     if request.method == "POST":
         users.check_csrf(request.form["csrf_token"])
         title = request.form["title"]
-        if len(title) < 0:
-            return render_template("newchat.html", error="Title cannot be empty")
+        if len(title) < 1:
+            return render_template(
+                "newchat.html",
+                error="Title cannot be empty",
+                campaign=campaign,
+                players=players,
+                id=id,
+                campaigns=campaign_list
+                )
         if len(title) > 300:
-            return render_template("newchat.html", error="Title is too long")
+            return render_template(
+                "newchat.html",
+                error="Title is too long",
+                campaigns=campaign_list
+                )
         private = request.form.get("private", 0)
         chat_id = chats.create_chat(id, title, private)
         chats.add_chatter(chat_id, user_id)
@@ -273,15 +364,18 @@ def create_chat(id):
 
 @app.route("/chats", methods=["GET", "POST"])
 def active_chats():
+    campaign_list = campaigns.get_campaigns()
     user_id = session.get("user_id")
     if not user_id:
         return render_template(
-            "error.html", error="You need to be logged in to chat")
+            "error.html",
+            error="You need to be logged in to chat",
+            campaigns=campaign_list
+            )
     if request.method == "GET":
-        campaign_list = []
-        user_campaigns = campaigns.get_joined_campaigns(user_id)
-        campaign_ids = [campaign.id for campaign in user_campaigns]
-        for campaign_info in user_campaigns:
+        chat_grouping = []
+        campaign_ids = [campaign.id for campaign in campaign_list]
+        for campaign_info in campaign_list:
             campaign = {}
             campaign["info"] = campaign_info
             all_chats = chats.get_campaign_chats(campaign_info.id)
@@ -290,19 +384,28 @@ def active_chats():
                 if chat["closed"] == 0
                 and session["username"] in chat["chatters"]
                 ]
-            campaign_list.append(campaign)
-        return render_template("chatlist.html", campaign_list=campaign_list)
+            chat_grouping.append(campaign)
+        return render_template(
+            "chatlist.html",
+            chat_grouping=chat_grouping,
+            campaigns=campaign_list
+            )
 
 @app.route("/chats/leave/<int:id>", methods=["GET", "POST"])
 def leave_chat(id):
+    campaign_list = campaigns.get_campaigns()
     user_id = session.get("user_id")
     if not user_id or not chats.user_in_chat(id, user_id):
         return render_template(
-            "error.html", error="You don't have access to this chat")
+            "error.html",
+            error="You don't have access to this chat",
+            campaigns=campaign_list
+            )
     chat = chats.get_chat(id)
-    campaign = campaigns.get_campaign_title(chat["campaign_id"])
+    campaign = campaigns.get_campaign_info(chat["campaign_id"])
     if request.method == "GET":
-        return render_template("chat.html", chat=chat, campaign=campaign)
+        return render_template(
+            "chat.html", chat=chat, campaign=campaign, campaigns=campaign_list)
     if request.method == "POST":
         users.check_csrf(request.form["csrf_token"])
         leave = request.form.get("leave", 0)

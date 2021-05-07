@@ -62,6 +62,7 @@ def deactivate_account(password):
         db.session.execute(sql, {"username":username})
         db.session.commit()
         log_out()
+        return True
     else:
         return False
 

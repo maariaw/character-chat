@@ -7,12 +7,24 @@ def create_campaign(title, password):
     creator_id = session.get("user_id", 0)
     sql = """INSERT INTO campaigns (title, creator_id, created_at,
              password, visible)
-             VALUES (:title, :creator_id, NOW(), :password, 1)"""
-    db.session.execute(
+             VALUES (:title, :creator_id, NOW(), :password, 1)
+             RETURNING id"""
+    id = db.session.execute(
         sql,
         {"title":title, "creator_id":creator_id, "password":hash_value}
-        )
+        ).fetchone()[0]
     db.session.commit()
+    return id
+
+def get_campaigns():
+    user_id = session.get("user_id", 0)
+    role = session.get("role", 0)
+    if role == 1 and user_id > 0:
+        return get_joined_campaigns(user_id)
+    elif role == 2 and user_id > 0:
+        return get_created_campaigns(user_id)
+    else:
+        return []
 
 def get_created_campaigns(user_id):
     sql = """SELECT id, title, created_at FROM campaigns
@@ -79,12 +91,16 @@ def deactivate_campaign(campaign_id):
 def check_password(campaign_id, password):
     sql = "SELECT password FROM campaigns WHERE id=:campaign_id"
     result = db.session.execute(sql, {"campaign_id":campaign_id}).fetchone()
+    if not result:
+        return False
     password_hash = result[0]
     return check_password_hash(password_hash, password)
 
 def is_creator(campaign_id, user_id):
     sql = "SELECT creator_id FROM campaigns WHERE id=:campaign_id"
     result = db.session.execute(sql, {"campaign_id":campaign_id}).fetchone()
+    if not result:
+        return False
     creator = result[0]
     return user_id == creator
 
