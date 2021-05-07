@@ -43,35 +43,32 @@
     </nav>
     {% endif %}
     <div class="content">
-        <p><b>
-        !THIS APP IS IN DEVELOPMENT, DO NOT GIVE SENSITIVE INFORMATION!
-        <br>
-        ACCOUNTS WILL BE WIPED OFTEN DURING DEVELOPMENT
-        </b></p>
         {% if message %}
         <p class="success">{{ message }}</p>
         {% endif %}
         {% if session.username %}
-        {% if (session.role == 2) %}
-        <h1>Welcome back to Character Chatter, GM {{ session.username }}!</h1>
-        <a class="big actionbtn" href="/create-campaign">Start a new campaign</a>
-        {% else %}
-        <h1>Welcome back to Character Chatter, {{ session.username }}!</h1>
-        {% endif %}
-        {% if campaigns == [] %}
-        <a class="big actionbtn" href="/campaigns">Find a campaign</a>
-        {% else %}
-        <h2>Your campaigns:</h2>
-        {% endif %}
-        <ul class="campaign-list">
-            {% for campaign in campaigns %}
-            <li>
-                <a class="campaign-link" href="/campaign/{{ campaign.id }}">
-                    <h3 class="big actionbtn campaign-title">{{ campaign.title }}</h3>
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
+        <div class="align-center">
+            {% if (session.role == 2) %}
+            <h1>Greetings, GM {{ session.username }}!</h1>
+            <a class="big actionbtn" href="/create-campaign">Start a new campaign</a>
+            {% else %}
+            <h1>Greetings, {{ session.username }}!</h1>
+            <a class="big actionbtn" href="/campaigns">Join a campaign</a>
+            {% endif %}
+            {% if campaigns != [] %}
+            <div class="greybox">
+                <ul class="campaign-list indentless-list">
+                    {% for campaign in campaigns %}
+                    <li>
+                        <a class="campaign-link" href="/campaign/{{ campaign.id }}">
+                            <h3 class="big actionbtn campaign-title">{{ campaign.title }}</h3>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
         {% else %}
         <form action="/login" method="POST">
             <h3>Login</h3>

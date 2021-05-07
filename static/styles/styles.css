@@ -113,12 +113,12 @@ ul {
     outline: none;
     background-color: #510D0A;
     cursor: pointer;
-    white-space: nowrap;
 }
 
 .small {
     padding: 0.2em;
     font-size: 0.8em;
+    white-space: nowrap;
 }
 
 .big {
@@ -202,7 +202,7 @@ input[value="Send"] {
     color: #510D0A;
 }
 
-.campaign-info {
+.align-center {
     text-align: center;
 }
 
