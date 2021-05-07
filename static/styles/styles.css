@@ -244,8 +244,8 @@ ul:before {
     width: 10%;
 }
 
-.logo {
-    width: 100px;
+img {
+    width: 50%;
     height: auto;
     margin-bottom: -0.5em;
     position: relative;
