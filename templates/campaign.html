@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}"
+    <img class="logo" src="{{ url_for('static',filename='/logo.png') }}"
         alt="Character Chatter logo"/>
     {% if session.username %}
     <nav class="navigation">
