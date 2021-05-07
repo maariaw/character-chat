@@ -245,7 +245,7 @@ ul:before {
 }
 
 .logo {
-    width: 50%;
+    width: 100px;
     height: auto;
     margin-bottom: -0.5em;
     position: relative;
