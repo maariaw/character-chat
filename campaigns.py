@@ -34,8 +34,10 @@ def get_created_campaigns(user_id):
 
 def is_active(campaign_id):
     sql = "SELECT visible FROM campaigns WHERE id=:campaign_id"
-    result = db.session.execute(sql, {"campaign_id":campaign_id})
-    status = result.fetchone()[0]
+    result = db.session.execute(sql, {"campaign_id":campaign_id}).fetchone()
+    if not result:
+        return False
+    status = result[0]
     return status == 1
 
 def get_campaign_info(campaign_id):

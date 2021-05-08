@@ -144,12 +144,6 @@ def campaign_page(id):
             error="You don't have access to this campaign",
             campaigns=campaign_list
             )
-    if not campaigns.is_active(id):
-        return render_template(
-            "error.html",
-            error="Campaign could not be loaded",
-            campaigns=campaign_list
-            )
     if request.method == "GET":
         campaign = campaigns.get_campaign_info(id)
         players = campaigns.get_campaign_players(id)
@@ -297,6 +291,8 @@ def leave_campaign(id):
             error="You don't have access to this campaign",
             campaigns=campaign_list
             )
+    if session.get("role", 0) == 2:
+        return redirect("/campaign/" + str(id) + "/delete")
     this_campaign = campaigns.get_campaign_info(id)
     players = campaigns.get_campaign_players(id)
     if request.method == "GET":
@@ -407,6 +403,8 @@ def active_chats():
 
 @app.route("/chats/leave/<int:id>", methods=["GET", "POST"])
 def leave_chat(id):
+    if session.get("role", 0) == 2:
+        return redirect("/chats")
     campaign_list = campaigns.get_campaigns()
     user_id = session.get("user_id")
     if not user_id or not chats.user_in_chat(id, user_id):
