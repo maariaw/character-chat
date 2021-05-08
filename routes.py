@@ -220,6 +220,8 @@ def delete_campaign(id):
 @app.route("/campaigns", methods=["GET"])
 def list_campaigns():
     campaign_list = campaigns.get_campaigns()
+    joined_ids = [campaign.id for campaign in campaign_list]
+    print(joined_ids)
     user_role = session.get("role", 0)
     if user_role == 0:
         return redirect("/")
@@ -243,7 +245,8 @@ def list_campaigns():
         show_campaigns=show_campaigns,
         message=message,
         gm_checked=gm_checked,
-        campaigns=campaign_list
+        campaigns=campaign_list,
+        joined=joined_ids
         )
 
 @app.route("/campaign/<int:id>/join", methods=["GET", "POST"])

@@ -42,8 +42,13 @@
                     <p>by {{ campaign.gm }} on {{ campaign.creation_time.strftime("%b %-d, %Y") }}</p>
                 </div>
                 <div class="flexright join">
+                    {% if campaign.id in joined %}
+                    <a class="big actionbtn"
+                        href="/campaign/{{ campaign.id }}/join">Go</a>
+                    {% else %}
                     <a class="big actionbtn"
                         href="/campaign/{{ campaign.id }}/join">Join</a>
+                    {% endif %}
                 </div>
             </div>
         </li>
