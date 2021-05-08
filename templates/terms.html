@@ -63,4 +63,7 @@
         service regularly for changes that may impact you. If you do not
         accept such amendments, you must cease using Character Chatter.
     </p>
+    {% if not session.username %}
+    <a class="small actionbtn" href="/">Main page</a>
+    {% endif %}
 {% endblock %}
