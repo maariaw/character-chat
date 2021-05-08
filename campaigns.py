@@ -45,7 +45,7 @@ def get_campaign_info(campaign_id):
                  u.name gm,
                  c.created_at creation_time
              FROM campaigns c, users u
-             WHERE c.id=:campaign_id AND u.id=c.creator_id"""
+             WHERE c.id=:campaign_id AND u.id=c.creator_id AND c.visible=1"""
     result = db.session.execute(sql, {"campaign_id":campaign_id})
     campaign = result.fetchone()
     return campaign
@@ -105,6 +105,8 @@ def is_creator(campaign_id, user_id):
     return user_id == creator
 
 def has_access(campaign_id, user_id):
+    if not is_active(campaign_id):
+        return False
     if is_creator(campaign_id, user_id):
         return True
     sql = """SELECT 1 FROM campaign_users

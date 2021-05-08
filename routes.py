@@ -180,6 +180,12 @@ def delete_campaign(id):
     if not campaigns.is_creator(id, user_id):
         return render_template(
             "error.html", error="No authority", campaigns=campaign_list)
+    if not campaigns.is_active(id):
+        return render_template(
+            "error.html",
+            error="Campaign has already been deleted",
+            campaigns=campaign_list
+            )
     campaign = campaigns.get_campaign_info(id)
     players = campaigns.get_campaign_players(id)
     if request.method == "GET":
@@ -253,18 +259,17 @@ def join_campaign(id):
                 )
     url = "/campaign/" + str(id)
     this_campaign = campaigns.get_campaign_info(id)
-    if request.method == "GET":
-        if campaigns.has_access(id, user_id):
-            return redirect(url)
-        if this_campaign:
-            return render_template(
-                "join.html", campaign=this_campaign, campaigns=campaign_list)
-        else:
-            return render_template(
+    if not this_campaign:
+        return render_template(
                 "error.html",
                 error="Could not find the campaign you were looking for",
                 campaigns=campaign_list
                 )
+    if request.method == "GET":
+        if campaigns.has_access(id, user_id):
+            return redirect(url)
+        return render_template(
+            "join.html", campaign=this_campaign, campaigns=campaign_list)
     if request.method == "POST":
         users.check_csrf(request.form["csrf_token"])
         password = request.form["password"]
@@ -324,6 +329,12 @@ def create_chat(id):
     if not campaigns.is_creator(id, user_id):
         return render_template(
             "error.html", error="No authority", campaigns=campaign_list)
+    if not campaigns.is_active(campaign_id):
+        return render_template(
+            "error.html",
+            error="Campaign has been deleted",
+            campaigns=campaign_list
+            )
     campaign = campaigns.get_campaign_info(id)
     players = campaigns.get_campaign_players(id)
     if request.method == "GET":
