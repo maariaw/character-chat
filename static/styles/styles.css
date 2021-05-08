@@ -40,7 +40,7 @@ ul {
 }
 
 .content {
-    margin: 0 auto 2em;
+    margin: 0 auto 0;
     padding: 2em 3em 4em;
     max-width: 50em;
     background-color: #FCF9EE;
@@ -243,4 +243,8 @@ ul:before {
 .join {
     margin: 0.3em;
     width: 10%;
+}
+
+footer p {
+    margin: 0 1em 1em 1em;
 }
