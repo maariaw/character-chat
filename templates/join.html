@@ -1,64 +1,26 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<head>
-    <title>Ch-Ch - Join campaign</title>
-    <link rel="stylesheet" type="text/css"
-        href="{{ url_for('static',filename='styles/styles.css') }}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Maaria Wahlström">
-    <meta name="description" content="Character Chatter is an app for playing
-    out social interactions between characters of a roleplaying campaign.">
-</head>
+{% block title %}
+    Join campaign
+{% endblock %}
 
-<body>
-    <img src="{{ url_for('static', filename='images/logo-small.png') }}"
-        alt="Character Chatter logo"/>
-    {% if session.username %}
-    <nav class="navigation">
-        <a href="/">Main page</a>
-        <a href="/campaigns">All campaigns</a>
-        <a href="/chats">My chats</a>
-        <div class="dropdown">
-            <button type="button" class="dropbutton">My campaigns</button>
-            <div class="dropcontent">
-                {% for campaign in campaigns %}
-                <a href="/campaign/{{ campaign.id }}">
-                    {{ campaign.title }}
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="dropdown">
-            <button type="button" class="dropbutton">Account</button>
-            <div class="dropcontent">
-                <p>Logged in as: {{ session.username }}</p>
-                <a href="/logout">Log out</a>
-                <a href="/account-status">
-                    Deactivate account
-                </a>
-            </div>
-        </div>
-    </nav>
-    {% endif %}
-    <div class="content">
-        <h1 class="campaign-title">{{ campaign.title }}</h1>
-        <p>GM: {{ campaign.gm }}</p>
-        <p>To join this campaign, ask your GM for the password and enter it here</p>
-        <form action="/campaign/{{ campaign.id }}/join" method="POST">
-            <p>
-                <label>
-                    Campaign password:
-                    <br>
-                    <input type="password" name="password" required>
-                    {% if error %}
-                    <br>
-                    <span class="error">{{ error }}</span>
-                    {% endif %}
-                </label>
-            </p>
-            <input class="big actionbtn" type="submit" value="Join">
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        </form>
-    </div>
-</body>
+{% block content %}
+    <h1 class="campaign-title">{{ campaign.title }}</h1>
+    <p>GM: {{ campaign.gm }}</p>
+    <p>To join this campaign, ask your GM for the password and enter it here</p>
+    <form action="/campaign/{{ campaign.id }}/join" method="POST">
+        <p>
+            <label>
+                Campaign password:
+                <br>
+                <input type="password" name="password" required>
+                {% if error %}
+                <br>
+                <span class="error">{{ error }}</span>
+                {% endif %}
+            </label>
+        </p>
+        <input class="big actionbtn" type="submit" value="Join">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+{% endblock %}

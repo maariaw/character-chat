@@ -1,81 +1,43 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<head>
-    <title>Ch-Ch - Delete campaign</title>
-    <link rel="stylesheet" type="text/css"
-        href="{{ url_for('static',filename='styles/styles.css') }}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Maaria Wahlström">
-    <meta name="description" content="Character Chatter is an app for playing
-    out social interactions between characters of a roleplaying campaign.">
-</head>
+{% block title %}
+    Delete campaign
+{% endblock %}
 
-<body>
-    <img src="{{ url_for('static', filename='images/logo-small.png') }}"
-        alt="Character Chatter logo"/>
-    {% if session.username %}
-    <nav class="navigation">
-        <a href="/">Main page</a>
-        <a href="/campaigns">All campaigns</a>
-        <a href="/chats">My chats</a>
-        <div class="dropdown">
-            <button type="button" class="dropbutton">My campaigns</button>
-            <div class="dropcontent">
-                {% for campaign in campaigns %}
-                <a href="/campaign/{{ campaign.id }}">
-                    {{ campaign.title }}
-                </a>
+{% block content %}
+    <div class="align-center">
+        <a class="campaign-link" href="/campaign/{{ campaign.id }}">
+            <h1 class="campaign-title">{{ campaign.title }}</h1>
+        </a>
+        <div class="infobox">
+            <p>GM:<br>{{ campaign.gm }}</p>
+            <ul class="indentless-list" aria-label="Players:">
+                {% for player in players %}
+                <li>{{ player }}</li>
                 {% endfor %}
-            </div>
+            </ul>
+            <p>Created on {{ campaign.creation_time.strftime("%b %-d, %Y") }}</p>
         </div>
-        <div class="dropdown">
-            <button type="button" class="dropbutton">Account</button>
-            <div class="dropcontent">
-                <p>Logged in as: {{ session.username }}</p>
-                <a href="/logout">Log out</a>
-                <a href="/account-status">
-                    Deactivate account
-                </a>
-            </div>
-        </div>
-    </nav>
-    {% endif %}
-    <div class="content">
-        <div class="align-center">
-            <a class="campaign-link" href="/campaign/{{ campaign.id }}">
-                <h1 class="campaign-title">{{ campaign.title }}</h1>
-            </a>
-            <div class="infobox">
-                <p>GM:<br>{{ campaign.gm }}</p>
-                <ul class="indentless-list" aria-label="Players:">
-                    {% for player in players %}
-                    <li>{{ player }}</li>
-                    {% endfor %}
-                </ul>
-                <p>Created on {{ campaign.creation_time.strftime("%b %-d, %Y") }}</p>
-            </div>
-        </div>
-        <h3>Delete campaign</h3>
-        <p>
-            To delete this campaign, enter the campaign password and click 
-            "Delete campaign". The chats in a deleted campaign can no longer be
-            accessed. You cannot create a new campaign with an identical title.
-        </p>
-        <form action="/campaign/{{ id }}/delete" method="POST">
-            <p>
-                <label>
-                    Campaign password:
-                    <br>
-                    <input type="password" name="password" required>
-                </label>
-                {% if error %}
-                <br>
-                <span class="error">{{ error }}</span>
-                {% endif %}
-            </p>
-            <input class="small actionbtn" type="submit" value="Delete campaign">
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        </form>
     </div>
-</body>
+    <h3>Delete campaign</h3>
+    <p>
+        To delete this campaign, enter the campaign password and click 
+        "Delete campaign". The chats in a deleted campaign can no longer be
+        accessed. You cannot create a new campaign with an identical title.
+    </p>
+    <form action="/campaign/{{ id }}/delete" method="POST">
+        <p>
+            <label>
+                Campaign password:
+                <br>
+                <input type="password" name="password" required>
+            </label>
+            {% if error %}
+            <br>
+            <span class="error">{{ error }}</span>
+            {% endif %}
+        </p>
+        <input class="small actionbtn" type="submit" value="Delete campaign">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+{% endblock %}

@@ -412,3 +412,8 @@ def leave_chat(id):
         if leave:
             chats.remove_user_from_chat(user_id, id)
         return redirect("/chats")
+
+@app.route("/terms-of-use", methods=["GET"])
+def terms():
+    campaign_list = campaigns.get_campaigns()
+    return render_template("terms.html", campaigns=campaign_list)

@@ -1,103 +1,65 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<head>
-    <title>Ch-Ch - Change account status</title>
-    <link rel="stylesheet" type="text/css"
-        href="{{ url_for('static',filename='styles/styles.css') }}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Maaria Wahlström">
-    <meta name="description" content="Character Chatter is an app for playing
-    out social interactions between characters of a roleplaying campaign.">
-</head>
+{% block title %}
+    Change account status
+{% endblock %}
 
-<body>
-    <img src="{{ url_for('static', filename='images/logo-small.png') }}"
-        alt="Character Chatter logo"/>
-    {% if session.username %}
-    <nav class="navigation">
-        <a href="/">Main page</a>
-        <a href="/campaigns">All campaigns</a>
-        <a href="/chats">My chats</a>
-        <div class="dropdown">
-            <button type="button" class="dropbutton">My campaigns</button>
-            <div class="dropcontent">
-                {% for campaign in campaigns %}
-                <a href="/campaign/{{ campaign.id }}">
-                    {{ campaign.title }}
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="dropdown">
-            <button type="button" class="dropbutton">Account</button>
-            <div class="dropcontent">
-                <p>Logged in as: {{ session.username }}</p>
-                <a href="/logout">Log out</a>
-                <a href="/account-status">
-                    Deactivate account
-                </a>
-            </div>
-        </div>
-    </nav>
+{% block content %}
+    {% if error %}
+    <p class="error">{{ error }}</p>
     {% endif %}
-    <div class="content">
-        {% if error %}
-        <p class="error">{{ error }}</p>
-        {% endif %}
-        <h1>Account status</h1>
-        {% if session.username %}
-        <p>Logged in as {{ session.username }}</p>
-        {% if session.role == 1 %}
+    <h1>Account status</h1>
+    {% if session.username %}
+    <p>Logged in as {{ session.username }}</p>
+    {% if session.role == 1 %}
+    <p>
+        Deactivate your account by entering your password below and 
+        clicking "Deactivate". You will be removed from any chats and 
+        campaigns you were participating in. Reactivation will not bring 
+        them back.
+    </p>
+    {% elif session.role == 2 %}
+    <p>
+        Deactivate your account by entering your password below and
+        clicking "Deactivate". All your created campaigns will be deleted.
+        The chats in deleted campaigns can no longer be accessed.
+        Reactivation will not bring back your campaigns and you can't
+        create campaigns with identical names.
+    </p>
+    {% endif %}
+    <form action="/account-status" method="POST">
         <p>
-            Deactivate your account by entering your password below and 
-            clicking "Deactivate". You will be removed from any chats and 
-            campaigns you were participating in. Reactivation will not bring 
-            them back.
+            <label>
+                Password:
+                <br>
+                <input type="password" name="deact-password" required>
+            </label>
         </p>
-        {% elif session.role == 2 %}
+        <input class="small actionbtn" type="submit" value="Deactivate">
+    </form>
+    {% else %}
+    <p>
+        To reactivate an account, type in the username and password of a 
+        deactivated account and click "Reactivate".
+    </p>
+    <form action="/account-status" method="POST">
         <p>
-            Deactivate your account by entering your password below and
-            clicking "Deactivate". All your created campaigns will be deleted.
-            The chats in deleted campaigns can no longer be accessed.
-            Reactivation will not bring back your campaigns and you can't
-            create campaigns with identical names.
+            <label>
+                Username:
+                <br>
+                <input type="text" name="username" required>
+            </label>
         </p>
-        {% endif %}
-        <form action="/account-status" method="POST">
-            <p>
-                <label>
-                    Password:
-                    <br>
-                    <input type="password" name="deact-password" required>
-                </label>
-            </p>
-            <input class="small actionbtn" type="submit" value="Deactivate">
-        </form>
-        {% else %}
         <p>
-            To reactivate an account, type in the username and password of a 
-            deactivated account and click "Reactivate".
+            <label>
+                Password:
+                <br>
+                <input type="password" name="react-password" required>
+            </label>
         </p>
-        <form action="/account-status" method="POST">
-            <p>
-                <label>
-                    Username:
-                    <br>
-                    <input type="text" name="username" required>
-                </label>
-            </p>
-            <p>
-                <label>
-                    Password:
-                    <br>
-                    <input type="password" name="react-password" required>
-                </label>
-            </p>
-            <input class="small actionbtn" type="submit" value="Reactivate">
-        </form>
-        <br>
-        <a class="small actionbtn" href="/">Go back</a>
-        {% endif %}
-    </div>
-</body>
+        <input class="small actionbtn" type="submit" value="Reactivate">
+    </form>
+    <br>
+    <a class="small actionbtn" href="/">Go back</a>
+    {% endif %}
+{% endblock %}

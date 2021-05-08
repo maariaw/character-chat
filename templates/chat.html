@@ -1,94 +1,56 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<head>
-    <title>Ch-Ch - Leave chat</title>
-    <link rel="stylesheet" type="text/css"
-        href="{{ url_for('static',filename='styles/styles.css') }}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Maaria Wahlström">
-    <meta name="description" content="Character Chatter is an app for playing
-    out social interactions between characters of a roleplaying campaign.">
-</head>
+{% block title %}
+    Leave chat
+{% endblock %}
 
-<body>
-    <img src="{{ url_for('static', filename='images/logo-small.png') }}"
-        alt="Character Chatter logo"/>
-    {% if session.username %}
-    <nav class="navigation">
-        <a href="/">Main page</a>
-        <a href="/campaigns">All campaigns</a>
-        <a href="/chats">My chats</a>
-        <div class="dropdown">
-            <button type="button" class="dropbutton">My campaigns</button>
-            <div class="dropcontent">
-                {% for campaign in campaigns %}
-                <a href="/campaign/{{ campaign.id }}">
-                    {{ campaign.title }}
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="dropdown">
-            <button type="button" class="dropbutton">Account</button>
-            <div class="dropcontent">
-                <p>Logged in as: {{ session.username }}</p>
-                <a href="/logout">Log out</a>
-                <a href="/account-status">
-                    Deactivate account
-                </a>
-            </div>
-        </div>
-    </nav>
-    {% endif %}
-    <div class="content">
-        <a class="campaign-link" href="/campaign/{{ campaign.id }}">
-            <h1 class="campaign-title">{{ campaign.title }}</h1>
-        </a>
-        <div class="greybox">
-            <p class="flexright">Created on {{ chat["time"].strftime("%b %-d, %Y") }}</p>
-            <h2>{{ chat["title"] }}</h2>
-            <ul class="indentless-list" aria-label="Participants:">
-                {% for chatter in chat["chatters"] %}
-                <li>{{ chatter }}</li>
-                {% endfor %}
-            </ul>
-            {% if chat["private"] == 1 %}
-            <p>This chat is private, only participating players can see it</p>
-            {% endif %}
-            <div class="messages">
-                <div>
-                    {% for message in chat["messages"] %}
-                    <div class="flexbox">
-                        <div class="flexleft sender">
-                            <i>{{ message["username"] }}</i> : 
-                        </div>
-                        <div class="flexleft messagetext">
-                            {{ message["text"] }}
-                        </div>
-                        <div class="flexright time">
-                            {{ message["time"]
-                                .strftime("%H:%M, %b %-d, %Y") }}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        
-        {% if session.role == 1 %}
-        <form action="/chats/leave/{{ chat["id"] }}" method="POST">
-            <label>
-                Leave chat
-                <input type="checkbox" name="leave" value=1 required>
-            </label>
-            <br>
-            This action cannot be reversed!
-            <br>
-            <input class="small actionbtn" type="submit" value="Confirm leave">
-            <input type="hidden" name="csrf_token"
-                value="{{ session.csrf_token }}">
-        </form>
+{% block content %}
+    <a class="campaign-link" href="/campaign/{{ campaign.id }}">
+        <h1 class="campaign-title">{{ campaign.title }}</h1>
+    </a>
+    <div class="greybox">
+        <p class="flexright">Created on {{ chat["time"].strftime("%b %-d, %Y") }}</p>
+        <h2>{{ chat["title"] }}</h2>
+        <ul class="indentless-list" aria-label="Participants:">
+            {% for chatter in chat["chatters"] %}
+            <li>{{ chatter }}</li>
+            {% endfor %}
+        </ul>
+        {% if chat["private"] == 1 %}
+        <p>This chat is private, only participating players can see it</p>
         {% endif %}
+        <div class="messages">
+            <div>
+                {% for message in chat["messages"] %}
+                <div class="flexbox">
+                    <div class="flexleft sender">
+                        <i>{{ message["username"] }}</i> : 
+                    </div>
+                    <div class="flexleft messagetext">
+                        {{ message["text"] }}
+                    </div>
+                    <div class="flexright time">
+                        {{ message["time"]
+                            .strftime("%H:%M, %b %-d, %Y") }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-</body>
+    
+    {% if session.role == 1 %}
+    <form action="/chats/leave/{{ chat["id"] }}" method="POST">
+        <label>
+            Leave chat
+            <input type="checkbox" name="leave" value=1 required>
+        </label>
+        <br>
+        This action cannot be reversed!
+        <br>
+        <input class="small actionbtn" type="submit" value="Confirm leave">
+        <input type="hidden" name="csrf_token"
+            value="{{ session.csrf_token }}">
+    </form>
+    {% endif %}
+{% endblock %}
