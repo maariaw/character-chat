@@ -32,8 +32,13 @@ App is still bare bones. Elements are in place, but no effort has been put towar
 ### Future features
 * GM can delete messages
 * GM can delete chats
+* GM can invite new participants to chats
+* GM can remove participants from chats
+* GM can remove players from campaigns
+* GM can change campaign password
 * GM can archive chats
 * GM can archive campaigns
-* GM and players can access their archived content 
+* GM and players can access their archived content
+* Users can change their password
 
 This app is being built as an assignment for Databases Lab course.
