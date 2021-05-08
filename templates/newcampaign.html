@@ -51,7 +51,7 @@
                 <label>
                     Title (max 100 characters):
                     <br>
-                    <input type="text" name="title" maxlength="100">
+                    <input type="text" name="title" maxlength="100" required>
                 </label>
                 {% if error == "Title cannot be empty"
                     or error == "Title is too long"
@@ -64,7 +64,7 @@
                 <label>
                     Password (8-32 characters):
                     <br>
-                    <input type="password" name="password">
+                    <input type="password" name="password" required>
                 </label>
                 {% if error == "Password is too short"
                     or error == "Password is too long" %}
