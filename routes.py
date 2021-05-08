@@ -329,7 +329,7 @@ def create_chat(id):
     if not campaigns.is_creator(id, user_id):
         return render_template(
             "error.html", error="No authority", campaigns=campaign_list)
-    if not campaigns.is_active(campaign_id):
+    if not campaigns.is_active(id):
         return render_template(
             "error.html",
             error="Campaign has been deleted",
