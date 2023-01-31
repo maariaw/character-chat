@@ -27,7 +27,11 @@ Sometimes role playing campaigns are packed full of action, but leave little tim
 * Users can access all their active chats on one page
 * A player can remove themselves from a chat
 
-This app with the above features was first built as an assignment for Databases Lab course. Future development possible.
+This app with the above features was built as an assignment for Databases Lab course.
+
+This was my first proper project done with Python, and my first time using Flask and Heroku, too. I followed an example
+project, learning how to adapt and implement the tools to my own project. It was also good practice in prioritizing features
+and adding them incrementally.
 
 ### Possible future features
 * GM can delete messages
