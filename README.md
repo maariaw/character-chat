@@ -6,6 +6,8 @@ Sometimes role playing campaigns are packed full of action, but leave little tim
 
 [_**TEST FINAL COURSE SUBMISSION VERSION HERE**_](https://character-chatter.herokuapp.com/)
 
+If you do visit Character Chatter, I invite you to join GM-Willow's campaign with the password "glorious".
+
 ## Features:
 * A user can create an account as either a player or a GM
 * A user can log in and out
